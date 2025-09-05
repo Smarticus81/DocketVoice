@@ -1,0 +1,11 @@
+python-dotenv
+elevenlabs>=2.13.0
+SpeechRecognition
+pyaudio
+pygame
+reportlab
+openai>=1.50.0
+numpy
+websockets
+aiortc
+requests
