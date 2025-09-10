@@ -359,7 +359,7 @@ class ModernRealtimeVoiceSystem:
             payload = {
                 "session": {
                     "type": "realtime",
-                    "model": "gpt-4o-realtime-preview-2024-10-01",
+                    "model": "gpt-realtime",
                     "audio": {
                         "output": {"voice": "alloy"}
                     }
@@ -388,6 +388,62 @@ class ModernRealtimeVoiceSystem:
         except Exception as e:
             logger.error(f"Ephemeral token creation exception: {e}")
             return None
+
+    def create_ephemeral_token_and_model(self) -> tuple[Optional[str], Optional[str]]:
+        """Create ephemeral token and return both token and model for exact matching.
+        
+        Returns:
+            tuple: (token, model) or (None, None) on failure
+        """
+        try:
+            api_key = getattr(self.settings, 'get_ai_api_key', lambda: os.getenv('OPENAI_API_KEY'))()
+            if not api_key:
+                logger.error("Cannot mint ephemeral token: base OpenAI API key missing")
+                return None, None
+
+            import requests, json
+
+            # Single source of truth for model - must match exactly in SDP POST
+            model = "gpt-realtime"
+            
+            url = "https://api.openai.com/v1/realtime/sessions"
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "OpenAI-Beta": "realtime=v1"
+            }
+
+            payload = {
+                "model": model,
+                "modalities": ["audio", "text"],  # Must include both audio and text
+                "voice": "alloy"
+            }
+
+            logger.info(f"Minting ephemeral token with model: {model}")
+            response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=15)
+
+            if response.status_code != 200:
+                logger.error("Ephemeral token request failed %s: %s", response.status_code, response.text)
+                return None, None
+
+            data = response.json()
+            token = data.get("client_secret", {}).get("value")
+            if not token:
+                logger.error("Ephemeral token response missing client_secret.value: %s", data)
+                return None, None
+
+            expires = data.get("client_secret", {}).get("expires_at")
+            if expires:
+                logger.info("Ephemeral token minted (expires_at=%s)", expires)
+            else:
+                logger.info("Ephemeral token minted (no expires_at provided)")
+            
+            logger.info(f"MINT MODEL: {model}")
+            return token, model
+            
+        except Exception as e:
+            logger.error(f"Ephemeral token creation exception: {e}")
+            return None, None
     
     def get_webrtc_config(self) -> Dict[str, Any]:
         """Get WebRTC configuration for browser client"""

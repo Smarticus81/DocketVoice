@@ -393,6 +393,8 @@
         let peerConnection = null;
         let dataChannel = null;
         let ephemeralToken = null;
+        let realtimeModel = null;
+        let sessionUpdated = false;
         
         // Tab switching
         function switchTab(index) {
@@ -464,6 +466,7 @@
                 }
                 
                 ephemeralToken = tokenResult.ephemeral_token;
+                realtimeModel = tokenResult.realtime_model;
                 
                 // Setup WebRTC
                 await setupWebRTC();
@@ -583,305 +586,101 @@
             
             dc.onopen = () => {
                 console.log('Data channel opened successfully');
-                logMessage('Data channel connected - ready for AI communication');
+                logMessage('Data channel connected - sending session configuration...');
                 
-                // Send comprehensive session configuration
-                try {
-                    dc.send(JSON.stringify({
-                        type: 'session.update',
-                        session: {
-                            modalities: ['text', 'audio'],
-                            instructions: `You are DocketVoice, an expert bankruptcy consultation assistant. Your mission is to provide professional, empathetic, and comprehensive bankruptcy guidance.
+                // Reset session update flag
+                sessionUpdated = false;
 
-CORE RESPONSIBILITIES:
-1. Conduct thorough bankruptcy consultations with warmth and professionalism
-2. Systematically collect complete client information using provided function tools
-3. Perform accurate means test analysis and eligibility assessments
-4. Explain complex bankruptcy concepts in clear, accessible language
-5. Generate detailed consultation reports with actionable recommendations
+                // Step 1: Send minimal session update first (instructions + basic settings)
+                const minimalUpdate = {
+                    type: "session.update",
+                    session: {
+                        instructions: `You are DocketVoice SOTA, an expert bankruptcy consultation AI assistant specializing in Chapter 7 and Chapter 13 bankruptcy cases. You are conducting a complete bankruptcy consultation to gather all necessary information for form completion.
+
+CONSULTATION STRUCTURE:
+1. INTRODUCTION & CHAPTER DETERMINATION
+   - Greet the client professionally
+   - Explain you'll be conducting a comprehensive bankruptcy consultation
+   - Determine if they need Chapter 7 or Chapter 13 based on their situation
+   - Explain the process will take 20-30 minutes
+
+2. PERSONAL INFORMATION COLLECTION
+   - Full legal name, SSN, date of birth
+   - Current address and previous addresses (2 years)
+   - Marital status and spouse information if applicable
+   - Dependents and household size
+   - Employment history and current income
+
+3. FINANCIAL DATA COLLECTION
+   - Monthly income from all sources
+   - Monthly expenses (housing, utilities, food, transportation, etc.)
+   - Assets (real estate, vehicles, bank accounts, investments, personal property)
+   - Debts (credit cards, loans, mortgages, judgments, taxes)
+   - Recent financial transactions and transfers
+
+4. MEANS TEST ANALYSIS
+   - Calculate median income for household size and state
+   - Determine if Chapter 7 means test is passed
+   - Analyze disposable income for Chapter 13 if needed
+
+5. DOCUMENT GENERATION
+   - Generate all required bankruptcy forms
+   - Provide completion summary and next steps
 
 COMMUNICATION STYLE:
-- Professional yet warm and approachable
-- Non-judgmental and empathetic to financial distress
-- Clear and patient in explanations
-- Thorough but efficient in information gathering
-- Encouraging while being realistic about options
+- Professional but empathetic
+- Clear explanations of bankruptcy concepts
+- Ask follow-up questions for completeness
+- Reassure clients about the process
+- Use plain language, avoid excessive legal jargon
 
-TECHNICAL GUIDELINES:
-- Always use function tools to collect and analyze data systematically
-- Ask follow-up questions to ensure complete information
-- Validate information for accuracy and completeness
-- Provide specific timelines and next steps
-- Reference relevant bankruptcy laws and procedures when appropriate
+FUNCTION USAGE:
+- Always call functions to process and store information
+- Use collect_personal_info() for personal data
+- Use collect_financial_data() for financial information
+- Use perform_means_test_analysis() after gathering income/expense data
+- Use generate_bankruptcy_documents() at the end
 
-AVAILABLE FUNCTION TOOLS:
-- collect_client_information: Gather personal details, contact info, employment
-- analyze_financial_profile: Process income, expenses, debts, and assets
-- perform_means_test_analysis: Determine Chapter 7 vs Chapter 13 eligibility
-- generate_consultation_report: Create comprehensive consultation summary
-
-IMPORTANT NOTES:
-- This consultation provides general information, not legal advice
-- Recommend attorney consultation for specific legal guidance
-- Maintain strict confidentiality of all client information
-- Focus on Chapter 7 and Chapter 13 options primarily
-- Consider debt management alternatives when appropriate
-
-Begin each consultation by warmly greeting the client and explaining the consultation process.`,
-                            voice: 'alloy',
-                            input_audio_format: 'pcm16',
-                            output_audio_format: 'pcm16',
-                            input_audio_transcription: { model: 'whisper-1' },
-                            turn_detection: { 
-                                type: 'server_vad',
-                                threshold: 0.5,
-                                prefix_padding_ms: 300,
-                                silence_duration_ms: 800
-                            },
-                            tools: [
-                                {
-                                    type: 'function',
-                                    name: 'collect_client_information',
-                                    description: 'Collect comprehensive client information for bankruptcy consultation',
-                                    parameters: {
-                                        type: 'object',
-                                        properties: {
-                                            personal_info: {
-                                                type: 'object',
-                                                properties: {
-                                                    full_name: { type: 'string' },
-                                                    ssn: { type: 'string', pattern: '^\\\\d{3}-\\\\d{2}-\\\\d{4}$' },
-                                                    date_of_birth: { type: 'string', format: 'date' },
-                                                    marital_status: {
-                                                        type: 'string',
-                                                        enum: ['single', 'married', 'divorced', 'widowed', 'separated']
-                                                    },
-                                                    dependents: { type: 'integer', minimum: 0 }
-                                                },
-                                                required: ['full_name']
-                                            },
-                                            contact_info: {
-                                                type: 'object',
-                                                properties: {
-                                                    address: {
-                                                        type: 'object',
-                                                        properties: {
-                                                            street: { type: 'string' },
-                                                            city: { type: 'string' },
-                                                            state: { type: 'string', minLength: 2, maxLength: 2 },
-                                                            zip_code: { type: 'string' }
-                                                        }
-                                                    },
-                                                    phone: { type: 'string' },
-                                                    email: { type: 'string', format: 'email' }
-                                                }
-                                            },
-                                            employment: {
-                                                type: 'object',
-                                                properties: {
-                                                    status: {
-                                                        type: 'string',
-                                                        enum: ['employed', 'unemployed', 'self_employed', 'retired', 'disabled']
-                                                    },
-                                                    employer: { type: 'string' },
-                                                    job_title: { type: 'string' },
-                                                    monthly_income: { type: 'number', minimum: 0 },
-                                                    employment_length: { type: 'string' }
-                                                }
-                                            }
-                                        },
-                                        required: ['personal_info']
-                                    }
-                                },
-                                {
-                                    type: 'function',
-                                    name: 'analyze_financial_profile',
-                                    description: 'Analyze complete financial profile including income, expenses, debts, and assets',
-                                    parameters: {
-                                        type: 'object',
-                                        properties: {
-                                            monthly_income: {
-                                                type: 'object',
-                                                properties: {
-                                                    employment: { type: 'number', minimum: 0 },
-                                                    self_employment: { type: 'number', minimum: 0 },
-                                                    social_security: { type: 'number', minimum: 0 },
-                                                    pension: { type: 'number', minimum: 0 },
-                                                    other: { type: 'number', minimum: 0 }
-                                                }
-                                            },
-                                            monthly_expenses: {
-                                                type: 'object',
-                                                properties: {
-                                                    housing: { type: 'number', minimum: 0 },
-                                                    utilities: { type: 'number', minimum: 0 },
-                                                    food: { type: 'number', minimum: 0 },
-                                                    transportation: { type: 'number', minimum: 0 },
-                                                    insurance: { type: 'number', minimum: 0 },
-                                                    healthcare: { type: 'number', minimum: 0 },
-                                                    childcare: { type: 'number', minimum: 0 },
-                                                    debt_payments: { type: 'number', minimum: 0 },
-                                                    other: { type: 'number', minimum: 0 }
-                                                }
-                                            },
-                                            debts: {
-                                                type: 'array',
-                                                items: {
-                                                    type: 'object',
-                                                    properties: {
-                                                        creditor: { type: 'string' },
-                                                        debt_type: {
-                                                            type: 'string',
-                                                            enum: ['credit_card', 'medical', 'personal_loan', 'mortgage', 'auto_loan', 'student_loan', 'tax_debt', 'other']
-                                                        },
-                                                        current_balance: { type: 'number', minimum: 0 },
-                                                        monthly_payment: { type: 'number', minimum: 0 },
-                                                        interest_rate: { type: 'number', minimum: 0 },
-                                                        is_secured: { type: 'boolean' },
-                                                        collateral: { type: 'string' }
-                                                    },
-                                                    required: ['creditor', 'debt_type', 'current_balance']
-                                                }
-                                            },
-                                            assets: {
-                                                type: 'array',
-                                                items: {
-                                                    type: 'object',
-                                                    properties: {
-                                                        asset_type: {
-                                                            type: 'string',
-                                                            enum: ['real_estate', 'vehicle', 'bank_account', 'investment', 'retirement', 'personal_property', 'business', 'other']
-                                                        },
-                                                        description: { type: 'string' },
-                                                        current_value: { type: 'number', minimum: 0 },
-                                                        debt_against: { type: 'number', minimum: 0 },
-                                                        equity: { type: 'number' }
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        required: ['monthly_income', 'monthly_expenses', 'debts']
-                                    }
-                                },
-                                {
-                                    type: 'function',
-                                    name: 'perform_means_test_analysis',
-                                    description: 'Perform comprehensive Chapter 7 means test and Chapter 13 feasibility analysis',
-                                    parameters: {
-                                        type: 'object',
-                                        properties: {
-                                            client_data: {
-                                                type: 'object',
-                                                properties: {
-                                                    state: { type: 'string', minLength: 2, maxLength: 2 },
-                                                    household_size: { type: 'integer', minimum: 1, maximum: 15 },
-                                                    monthly_income: { type: 'number', minimum: 0 },
-                                                    monthly_expenses: { type: 'number', minimum: 0 },
-                                                    total_debt: { type: 'number', minimum: 0 },
-                                                    secured_debt: { type: 'number', minimum: 0 },
-                                                    unsecured_debt: { type: 'number', minimum: 0 }
-                                                },
-                                                required: ['state', 'household_size', 'monthly_income']
-                                            },
-                                            special_circumstances: {
-                                                type: 'array',
-                                                items: {
-                                                    type: 'string',
-                                                    enum: ['recent_job_loss', 'medical_emergency', 'divorce', 'disability', 'military_service', 'elderly_care', 'other']
-                                                }
-                                            },
-                                            previous_bankruptcies: {
-                                                type: 'array',
-                                                items: {
-                                                    type: 'object',
-                                                    properties: {
-                                                        chapter: { type: 'string', enum: ['7', '11', '12', '13'] },
-                                                        filing_date: { type: 'string', format: 'date' },
-                                                        discharge_date: { type: 'string', format: 'date' }
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        required: ['client_data']
-                                    }
-                                },
-                                {
-                                    type: 'function',
-                                    name: 'generate_consultation_report',
-                                    description: 'Generate comprehensive bankruptcy consultation report with recommendations',
-                                    parameters: {
-                                        type: 'object',
-                                        properties: {
-                                            consultation_summary: {
-                                                type: 'object',
-                                                properties: {
-                                                    primary_financial_issues: {
-                                                        type: 'array',
-                                                        items: { type: 'string' }
-                                                    },
-                                                    debt_categories: {
-                                                        type: 'object',
-                                                        properties: {
-                                                            secured: { type: 'number' },
-                                                            unsecured: { type: 'number' },
-                                                            priority: { type: 'number' }
-                                                        }
-                                                    },
-                                                    asset_summary: {
-                                                        type: 'object',
-                                                        properties: {
-                                                            total_value: { type: 'number' },
-                                                            exempt_value: { type: 'number' },
-                                                            non_exempt_value: { type: 'number' }
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                            recommendations: {
-                                                type: 'object',
-                                                properties: {
-                                                    primary_recommendation: {
-                                                        type: 'string',
-                                                        enum: ['chapter_7', 'chapter_13', 'debt_management', 'negotiate_settlements', 'no_action_needed']
-                                                    },
-                                                    alternative_options: {
-                                                        type: 'array',
-                                                        items: { type: 'string' }
-                                                    },
-                                                    urgency: {
-                                                        type: 'string',
-                                                        enum: ['immediate', 'within_30_days', 'within_90_days', 'within_6_months', 'no_urgency']
-                                                    }
-                                                }
-                                            },
-                                            next_steps: {
-                                                type: 'array',
-                                                items: {
-                                                    type: 'object',
-                                                    properties: {
-                                                        step: { type: 'string' },
-                                                        timeline: { type: 'string' },
-                                                        importance: { type: 'string', enum: ['critical', 'important', 'recommended'] },
-                                                        description: { type: 'string' }
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        required: ['consultation_summary', 'recommendations', 'next_steps']
-                                    }
-                                }
-                            ],
-                            tool_choice: 'auto',
-                            temperature: 0.7,
-                            max_response_output_tokens: 4096
+Begin by introducing yourself and explaining the consultation process.`,
+                        modalities: ["audio", "text"],
+                        voice: "alloy",
+                        turn_detection: {
+                            type: "server_vad",
+                            threshold: 0.5,
+                            prefix_padding_ms: 300,
+                            silence_duration_ms: 500,
+                            create_response: true,
+                            interrupt_response: true
                         }
-                    }));
-                    console.log('Sent comprehensive session update to OpenAI');
-                    logMessage('AI configured with full bankruptcy consultation capabilities');
-                } catch (error) {
-                    console.error('Failed to send session update:', error);
-                    logMessage('Failed to configure AI with bankruptcy consultation capabilities');
-                }
+                        // Note: No temperature (let OpenAI use default) and no input_audio_transcription for minimal payload
+                    }
+                };
+
+                dc.send(JSON.stringify(minimalUpdate));
+                console.log('Minimal session update sent - waiting for confirmation...');
+                logMessage('Step 1: Basic configuration sent');
+
+                // Step 2: Send tools in a separate update after a short delay
+                setTimeout(() => {
+                    // Only send tools if session update was successful
+                    if (!sessionUpdated) {
+                        console.warn('Session update not confirmed yet, waiting...');
+                        logMessage('Waiting for session update confirmation before sending tools...');
+                        
+                        // Retry after another delay
+                        setTimeout(() => {
+                            if (sessionUpdated) {
+                                sendToolsUpdate(dc);
+                            } else {
+                                console.error('Session update failed - tools not sent');
+                                logMessage('Session update failed - cannot proceed with tools');
+                            }
+                        }, 2000);
+                        return;
+                    }
+                    
+                    sendToolsUpdate(dc);
+                }, 1000); // Wait 1 second for first update to be processed
             };
             
             dc.onerror = (error) => {
@@ -895,6 +694,20 @@ Begin each consultation by warmly greeting the client and explaining the consult
                     const message = JSON.parse(event.data);
                     console.log('Parsed message:', message);
                     
+                    // Handle schema validation errors and auto-retry
+                    if (message.type === 'error') {
+                        console.warn('Realtime error:', message.error);
+                        logMessage(`OpenAI Error: ${message.error?.message || 'Unknown error'}`);
+                        
+                        // If we see a tools.type complaint, retry with corrected session update
+                        if (String(message.error?.message || "").includes("session.tools") &&
+                            String(message.error?.message || "").includes("type")) {
+                            console.log('Retrying session update with corrected tool definitions...');
+                            dc.send(JSON.stringify(sessionUpdate)); // Re-send the corrected object
+                        }
+                        return;
+                    }
+                    
                     if (message.type === 'function_call') {
                         handleFunctionCall(message.function_name, message.arguments);
                     } else if (message.type === 'response') {
@@ -902,7 +715,9 @@ Begin each consultation by warmly greeting the client and explaining the consult
                     } else if (message.type === 'session.created') {
                         logMessage('OpenAI session created');
                     } else if (message.type === 'session.updated') {
-                        logMessage('OpenAI session updated');
+                        sessionUpdated = true;
+                        logMessage('OpenAI session updated successfully');
+                        console.log('Session update confirmed - tools can now be sent');
                     } else if (message.type === 'conversation.item.created') {
                         logMessage('Conversation item created');
                     } else if (message.type === 'response.created') {
@@ -931,20 +746,40 @@ Begin each consultation by warmly greeting the client and explaining the consult
             
             // Send to our Flask backend which handles OpenAI connection
             console.log('Sending offer to backend...');
-            const sdpResponse = await fetch('/api/webrtc-session', {
-                method: 'POST',
-                body: JSON.stringify({
-                    sdp: offer.sdp,
-                    ephemeral_token: ephemeralToken
-                }),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            
+            // Try sending SDP as raw text body first (preferred method)
+            let sdpResponse;
+            try {
+                sdpResponse = await fetch('/api/webrtc-session', {
+                    method: 'POST',
+                    body: offer.sdp,  // Send raw SDP
+                    headers: {
+                        'Content-Type': 'application/sdp',
+                        'X-Ephemeral-Token': ephemeralToken,
+                        'X-Model': realtimeModel,  // Send model for exact matching
+                    },
+                });
+            } catch (error) {
+                console.log('Raw SDP method failed, trying JSON method...');
+                // Fallback to JSON method
+                sdpResponse = await fetch('/api/webrtc-session', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        sdp: offer.sdp,
+                        ephemeral_token: ephemeralToken,
+                        model: realtimeModel  // Send model for exact matching
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            }
             
             if (!sdpResponse.ok) {
+                const errorText = await sdpResponse.text();
                 console.error('Backend response not OK:', sdpResponse.status);
-                throw new Error(`WebRTC setup error: ${sdpResponse.status}`);
+                console.error('Error details:', errorText);
+                throw new Error(`WebRTC setup error: ${sdpResponse.status} - ${errorText}`);
             }
             
             const answerSdp = await sdpResponse.text();
@@ -960,6 +795,158 @@ Begin each consultation by warmly greeting the client and explaining the consult
             dataChannel = dc;
             
             logMessage('WebRTC setup complete - waiting for connection...');
+        }
+        
+        function sendToolsUpdate(dc) {
+            const toolsUpdate = {
+                type: "session.update",
+                session: {
+                    tools: [
+                        {
+                            type: "function",
+                            name: "collect_personal_info",
+                            description: "Collect and store personal information for bankruptcy forms",
+                            parameters: {
+                                type: "object",
+                                properties: {
+                                    full_name: { type: "string" },
+                                    ssn: { type: "string" },
+                                    date_of_birth: { type: "string" },
+                                    address: { type: "string" },
+                                    phone: { type: "string" },
+                                    email: { type: "string" },
+                                    marital_status: { type: "string" },
+                                    spouse_info: {
+                                        type: "object",
+                                        properties: {
+                                            full_name: { type: "string" },
+                                            ssn: { type: "string" },
+                                            date_of_birth: { type: "string" }
+                                        },
+                                        additionalProperties: true
+                                    },
+                                    dependents: {
+                                        type: "array",
+                                        items: {
+                                            type: "object",
+                                            properties: {
+                                                name: { type: "string" },
+                                                age: { type: "integer" },
+                                                relationship: { type: "string" }
+                                            },
+                                            required: ["name"]
+                                        }
+                                    },
+                                    employment: {
+                                        type: "object",
+                                        properties: {
+                                            status: { type: "string" },
+                                            employer: { type: "string" },
+                                            position: { type: "string" },
+                                            start_date: { type: "string" },
+                                            income_frequency: { type: "string" }
+                                        },
+                                        additionalProperties: true
+                                    }
+                                },
+                                required: ["full_name"],
+                                additionalProperties: true
+                            }
+                        },
+                        {
+                            type: "function",
+                            name: "collect_financial_data",
+                            description: "Collect and store financial information",
+                            parameters: {
+                                type: "object",
+                                properties: {
+                                    monthly_income: { type: "number" },
+                                    income_sources: {
+                                        type: "array",
+                                        items: { type: "string" }
+                                    },
+                                    monthly_expenses: {
+                                        type: "object",
+                                        additionalProperties: { type: "number" }
+                                    },
+                                    assets: {
+                                        type: "array",
+                                        items: {
+                                            type: "object",
+                                            properties: {
+                                                type: { type: "string" },
+                                                description: { type: "string" },
+                                                value: { type: "number" }
+                                            },
+                                            required: ["type", "value"]
+                                        }
+                                    },
+                                    debts: {
+                                        type: "array",
+                                        items: {
+                                            type: "object",
+                                            properties: {
+                                                creditor: { type: "string" },
+                                                account_number: { type: "string" },
+                                                balance: { type: "number" },
+                                                monthly_payment: { type: "number" },
+                                                secured: { type: "boolean" }
+                                            },
+                                            required: ["creditor", "balance"]
+                                        }
+                                    },
+                                    recent_payments: {
+                                        type: "array",
+                                        items: {
+                                            type: "object",
+                                            properties: {
+                                                payee: { type: "string" },
+                                                amount: { type: "number" },
+                                                date: { type: "string" }
+                                            },
+                                            required: ["payee", "amount"]
+                                        }
+                                    }
+                                },
+                                required: ["monthly_income"],
+                                additionalProperties: true
+                            }
+                        },
+                        {
+                            type: "function",
+                            name: "perform_means_test_analysis",
+                            description: "Perform means test calculation and chapter recommendation",
+                            parameters: {
+                                type: "object",
+                                properties: {
+                                    household_size: { type: "integer" },
+                                    state: { type: "string" },
+                                    total_monthly_income: { type: "number" }
+                                },
+                                required: ["household_size", "state", "total_monthly_income"]
+                            }
+                        },
+                        {
+                            type: "function",
+                            name: "generate_bankruptcy_documents",
+                            description: "Generate all required bankruptcy forms and documents",
+                            parameters: {
+                                type: "object",
+                                properties: {
+                                    chapter_type: { type: "string", enum: ["7", "13"] },
+                                    include_schedules: { type: "boolean", default: true }
+                                },
+                                required: ["chapter_type"]
+                            }
+                        }
+                    ],
+                    tool_choice: "auto"
+                }
+            };
+
+            dc.send(JSON.stringify(toolsUpdate));
+            console.log('Tools update sent to OpenAI');
+            logMessage('Step 2: Tools configured - AI ready for bankruptcy consultation');
         }
         
         async function handleFunctionCall(functionName, arguments) {

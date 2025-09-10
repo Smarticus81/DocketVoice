@@ -93,6 +93,194 @@ def cleanup():
 
 atexit.register(cleanup)
 
+def get_bankruptcy_consultation_instructions():
+    """Get comprehensive bankruptcy consultation instructions"""
+    return """You are DocketVoice SOTA, an expert bankruptcy consultation AI assistant specializing in Chapter 7 and Chapter 13 bankruptcy cases. You are conducting a complete bankruptcy consultation to gather all necessary information for form completion.
+
+CONSULTATION STRUCTURE:
+1. INTRODUCTION & CHAPTER DETERMINATION
+   - Greet the client professionally
+   - Explain you'll be conducting a comprehensive bankruptcy consultation
+   - Determine if they need Chapter 7 or Chapter 13 based on their situation
+   - Explain the process will take 20-30 minutes
+
+2. PERSONAL INFORMATION COLLECTION
+   - Full legal name, SSN, date of birth
+   - Current address and previous addresses (2 years)
+   - Marital status and spouse information if applicable
+   - Dependents and household size
+   - Employment history and current income
+
+3. FINANCIAL DATA COLLECTION
+   - Monthly income from all sources
+   - Monthly expenses (housing, utilities, food, transportation, etc.)
+   - Assets (real estate, vehicles, bank accounts, investments, personal property)
+   - Debts (credit cards, loans, mortgages, judgments, taxes)
+   - Recent financial transactions and transfers
+
+4. MEANS TEST ANALYSIS
+   - Calculate median income for household size and state
+   - Determine if Chapter 7 means test is passed
+   - Analyze disposable income for Chapter 13 if needed
+
+5. DOCUMENT GENERATION
+   - Generate all required bankruptcy forms
+   - Provide completion summary and next steps
+
+COMMUNICATION STYLE:
+- Professional but empathetic
+- Clear explanations of bankruptcy concepts
+- Ask follow-up questions for completeness
+- Reassure clients about the process
+- Use plain language, avoid excessive legal jargon
+
+FUNCTION USAGE:
+- Always call functions to process and store information
+- Use collect_personal_info() for personal data
+- Use collect_financial_data() for financial information
+- Use perform_means_test_analysis() after gathering income/expense data
+- Use generate_bankruptcy_documents() at the end
+
+Begin by introducing yourself and explaining the consultation process."""
+
+def get_bankruptcy_function_definitions():
+    """Get function definitions for bankruptcy consultation"""
+    return [
+        {
+            "name": "collect_personal_info",
+            "description": "Collect and store personal information for bankruptcy forms",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "full_name": {"type": "string"},
+                    "ssn": {"type": "string"},
+                    "date_of_birth": {"type": "string"},
+                    "address": {"type": "string"},
+                    "phone": {"type": "string"},
+                    "email": {"type": "string"},
+                    "marital_status": {"type": "string"},
+                    "spouse_info": {
+                        "type": "object",
+                        "properties": {
+                            "full_name": {"type": "string"},
+                            "ssn": {"type": "string"},
+                            "date_of_birth": {"type": "string"}
+                        },
+                        "additionalProperties": True
+                    },
+                    "dependents": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {"type": "string"},
+                                "age": {"type": "integer"},
+                                "relationship": {"type": "string"}
+                            },
+                            "required": ["name"]
+                        }
+                    },
+                    "employment": {
+                        "type": "object",
+                        "properties": {
+                            "status": {"type": "string"},
+                            "employer": {"type": "string"},
+                            "position": {"type": "string"},
+                            "start_date": {"type": "string"},
+                            "income_frequency": {"type": "string"}
+                        },
+                        "additionalProperties": True
+                    }
+                },
+                "required": ["full_name"],
+                "additionalProperties": True
+            }
+        },
+        {
+            "name": "collect_financial_data",
+            "description": "Collect and store financial information",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "monthly_income": {"type": "number"},
+                    "income_sources": {
+                        "type": "array",
+                        "items": {"type": "string"}
+                    },
+                    "monthly_expenses": {
+                        "type": "object",
+                        "additionalProperties": {"type": "number"}
+                    },
+                    "assets": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "type": {"type": "string"},
+                                "description": {"type": "string"},
+                                "value": {"type": "number"}
+                            },
+                            "required": ["type", "value"]
+                        }
+                    },
+                    "debts": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "creditor": {"type": "string"},
+                                "account_number": {"type": "string"},
+                                "balance": {"type": "number"},
+                                "monthly_payment": {"type": "number"},
+                                "secured": {"type": "boolean"}
+                            },
+                            "required": ["creditor", "balance"]
+                        }
+                    },
+                    "recent_payments": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "payee": {"type": "string"},
+                                "amount": {"type": "number"},
+                                "date": {"type": "string"}
+                            },
+                            "required": ["payee", "amount"]
+                        }
+                    }
+                },
+                "required": ["monthly_income"],
+                "additionalProperties": True
+            }
+        },
+        {
+            "name": "perform_means_test_analysis",
+            "description": "Perform means test calculation and chapter recommendation",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "household_size": {"type": "integer"},
+                    "state": {"type": "string"},
+                    "total_monthly_income": {"type": "number"}
+                },
+                "required": ["household_size", "state", "total_monthly_income"]
+            }
+        },
+        {
+            "name": "generate_bankruptcy_documents",
+            "description": "Generate all required bankruptcy forms and documents",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "chapter_type": {"type": "string", "enum": ["7", "13"]},
+                    "include_schedules": {"type": "boolean", "default": True}
+                },
+                "required": ["chapter_type"]
+            }
+        }
+    ]
+
 @app.route('/')
 def index():
     """Main web interface"""
@@ -108,16 +296,38 @@ def get_ephemeral_token():
             logger.error("Voice system not initialized")
             return jsonify({"success": False, "error": "Voice system not initialized"})
         
-        # Create ephemeral token
-        token = voice_system.create_ephemeral_token()
+        # Create ephemeral token with model
+        token, model = voice_system.create_ephemeral_token_and_model()
         
-        if not token:
+        if not token or not model:
             return jsonify({"success": False, "error": "Failed to create token"})
         
+        # Get basic WebRTC config (no session config here)
+        webrtc_config = voice_system.get_webrtc_config()
+        
+        # Return token, model, and session configuration for client-side setup
         return jsonify({
             "success": True,
             "ephemeral_token": token,
-            "config": voice_system.get_webrtc_config()
+            "realtime_model": model,  # Send model to client for exact matching
+            "config": webrtc_config,
+            "session_config": {
+                "instructions": get_bankruptcy_consultation_instructions(),
+                "tools": get_bankruptcy_function_definitions(),
+                "tool_choice": "auto",
+                "modalities": ["audio", "text"],
+                "voice": "alloy",
+                "turn_detection": {
+                    "type": "server_vad",
+                    "threshold": 0.5,
+                    "prefix_padding_ms": 300,
+                    "silence_duration_ms": 500,
+                    "create_response": True,
+                    "interrupt_response": True
+                },
+                "input_audio_transcription": {"model": "whisper-1"},
+                "temperature": 0.2
+            }
         })
         
     except Exception as e:
@@ -126,54 +336,93 @@ def get_ephemeral_token():
 
 @app.route('/api/webrtc-session', methods=['POST'])
 def setup_webrtc_session():
-    """Setup WebRTC session with OpenAI"""
+    """Setup WebRTC session with OpenAI - SDP offer/answer only"""
     global voice_system
     
     try:
         if not voice_system:
             return "Error: Voice system not initialized", 400
         
-        data = request.get_json()
-        sdp = data.get('sdp')
-        ephemeral_token = data.get('ephemeral_token')
+        # Check if request has JSON data or raw SDP
+        if request.content_type == 'application/json':
+            data = request.get_json()
+            sdp = data.get('sdp')
+            ephemeral_token = data.get('ephemeral_token')
+            model = data.get('model')  # Get model from client
+            logger.info("Received JSON request with SDP, token, and model")
+        else:
+            # Raw SDP in body, token in header
+            sdp = request.get_data(as_text=True)
+            ephemeral_token = request.headers.get('X-Ephemeral-Token')
+            model = request.headers.get('X-Model')  # Fallback for raw SDP
+            logger.info("Received raw SDP request")
         
-        if not sdp or not ephemeral_token:
-            return "Error: Missing SDP or token", 400
+        if not sdp or not ephemeral_token or not model:
+            logger.error(f"Missing data - SDP: {bool(sdp)}, Token: {bool(ephemeral_token)}, Model: {bool(model)}")
+            return "Error: Missing SDP, token, or model", 400
         
-        # Forward request to OpenAI using correct WebRTC endpoint
+        # Forward SDP request to OpenAI using exact recommended approach
         import requests
+
+        OPENAI_REALTIME_URL = "https://api.openai.com/v1/realtime"  # <-- note: NOT /calls
+
+        # Use the exact model that was used to mint the ephemeral token
+        logger.info(f"MINT MODEL: {model}")
+        logger.info(f"SDP  MODEL: {model}")
+        logger.info(f"TOKEN HEAD: {ephemeral_token[:16]}...")
+        logger.info(f"SDP HEAD: {repr(sdp[:80])}")
+
+        logger.info(f"Sending SDP to OpenAI (length: {len(sdp)} chars)")
+        logger.info(f"SDP preview: {sdp[:100]}...")
+        logger.info(f"Using model: {model}")
+        logger.info(f"Token prefix: {ephemeral_token[:20]}...")
         
-        logger.info(f"Forwarding WebRTC request to OpenAI with ephemeral token: {ephemeral_token[:10]}...")
-        logger.info(f"SDP offer length: {len(sdp)} characters")
+        # Prepare request
+        url = f"{OPENAI_REALTIME_URL}?model={model}"
+        headers = {
+            "Authorization": f"Bearer {ephemeral_token}",
+            "OpenAI-Beta": "realtime=v1",      # REQUIRED
+            "Content-Type": "application/sdp", # REQUIRED
+            "Accept": "application/sdp",       # REQUIRED
+        }
         
-        base_url = "https://api.openai.com/v1/realtime/calls"
-        model = "gpt-4o-realtime-preview-2024-10-01"
-        logger.info(f"Making request to: {base_url}?model={model}")
+        logger.info(f"Request URL: {url}")
+        logger.info(f"Request headers: {headers}")
         
         openai_response = requests.post(
-            f'{base_url}?model={model}',
-            data=sdp,
-            headers={
-                'Authorization': f'Bearer {ephemeral_token}',
-                'Content-Type': 'application/sdp'
-            }
+            url,
+            data=sdp,                              # raw SDP offer from the browser
+            headers=headers,
+            timeout=30,
         )
-        
+
         logger.info(f"OpenAI response status: {openai_response.status_code}")
         logger.info(f"OpenAI response headers: {dict(openai_response.headers)}")
+
+        if openai_response.status_code not in (200, 201):
+            logger.error("OpenAI WebRTC setup failed: %s", openai_response.status_code)
+            logger.error("OpenAI response: %s", openai_response.text)
+            logger.error("Request data length: %s", len(sdp))
+            return (
+                f"Error: OpenAI rejected request ({openai_response.status_code}): "
+                f"{openai_response.text}",
+                400,
+            )
+
+        # Log the Location header if present (useful for server-side WS approach)
+        location = openai_response.headers.get('Location')
+        if location:
+            logger.info(f"WebRTC session Location: {location}")
         
-        if openai_response.status_code not in [200, 201]:
-            logger.error(f"OpenAI WebRTC setup failed: {openai_response.status_code}")
-            logger.error(f"OpenAI response: {openai_response.text}")
-            return f"Error: OpenAI rejected request ({openai_response.status_code})", 400
-        
-        logger.info("WebRTC session established successfully")
-        logger.info(f"Answer SDP length: {len(openai_response.text)} characters")
-        # Return the answer SDP
-        return openai_response.text, 200, {'Content-Type': 'application/sdp'}
+        logger.info("WebRTC SDP exchange completed successfully")
+        logger.info(f"Response SDP length: {len(openai_response.text)}")
+        return openai_response.text, 200, {"Content-Type": "application/sdp"}
         
     except Exception as e:
         logger.error(f"Error setting up WebRTC session: {e}")
+        logger.error(f"Exception type: {type(e)}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
         return f"Error: {str(e)}", 500
 
 @app.route('/api/function-call', methods=['POST'])
