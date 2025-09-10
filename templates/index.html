@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocketVoice - Integrated Bankruptcy Platform</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 8px 0 0 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        .content {
+            padding: 25px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ecf0f1;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
+            border-radius: 6px 6px 0 0;
+            margin-right: 3px;
+            margin-bottom: -2px;
+        }
+        
+        .tab.active {
+            background: #3498db;
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .control-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .control-panel h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
+        }
+        
+        .status-panel {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 3px solid #27ae60;
+        }
+        
+        .status-panel h4 {
+            margin-top: 0;
+            font-size: 1rem;
+        }
+        
+        .error-panel {
+            background: #fef2f2;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 3px solid #e74c3c;
+            display: none;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        
+        .progress-bar {
+            background: #ecf0f1;
+            border-radius: 8px;
+            height: 16px;
+            margin: 12px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 8px;
+        }
+        
+        .case-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .status-card {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ecf0f1;
+            text-align: center;
+        }
+        
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .status-label {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+        
+        .log-output {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #bdc3c7;
+            border-radius: 6px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin: 15px 0;
+        }
+        
+        .upload-area:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+        
+        .upload-area.dragover {
+            border-color: #2980b9;
+            background: #e8f4fd;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .microphone-status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #e74c3c;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .microphone-status.active {
+            background: #27ae60;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .voice-controls {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .voice-status {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>DocketVoice Platform</h1>
+            <p>Integrated Bankruptcy Consultation with WebRTC Voice Interface</p>
+        </div>
+        
+        <div class="content">
+            <!-- Tab Navigation -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab(0)">Voice Consultation</button>
+                <button class="tab" onclick="switchTab(1)">Case Management</button>
+                <button class="tab" onclick="switchTab(2)">Document Processing</button>
+                <button class="tab" onclick="switchTab(3)">System Status</button>
+            </div>
+            
+            <!-- Tab 1: Voice Consultation -->
+            <div class="tab-content active">
+                <div class="control-panel">
+                    <h3>Voice Consultation System</h3>
+                    <div class="voice-controls">
+                        <div class="voice-status" id="voiceStatus">Ready to start consultation</div>
+                        <button class="btn" id="initVoiceBtn" onclick="initializeVoice()">
+                            Initialize Voice System
+                        </button>
+                        <button class="btn btn-success" id="startVoiceBtn" onclick="startVoiceChat()" disabled>
+                            Start Voice Consultation <span class="microphone-status" id="micStatus"></span>
+                        </button>
+                        <button class="btn btn-danger" id="stopVoiceBtn" onclick="stopVoiceChat()" disabled>
+                            Stop Consultation
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="status-panel" id="consultationStatus" style="display: none;">
+                    <h4>Consultation in Progress</h4>
+                    <p>The AI is listening and ready to help with your bankruptcy consultation.</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="consultationProgress"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab 2: Case Management -->
+            <div class="tab-content">
+                <div class="control-panel">
+                    <h3>Bankruptcy Case Management</h3>
+                    <button class="btn" onclick="refreshCaseStatus()">Refresh Status</button>
+                    <button class="btn btn-success" onclick="generateDocuments()">Generate Documents</button>
+                    <button class="btn" onclick="performMeansTest()">Perform Means Test</button>
+                </div>
+                
+                <div class="status-panel">
+                    <h4>Current Case Status</h4>
+                    <div class="case-status" id="caseStatusDisplay">
+                        <div class="status-card">
+                            <div class="status-value" id="completionPercent">0%</div>
+                            <div class="status-label">Completion</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-value" id="formsCompleted">0</div>
+                            <div class="status-label">Forms Completed</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-value" id="readyStatus">No</div>
+                            <div class="status-label">Ready for Filing</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab 3: Document Processing -->
+            <div class="tab-content">
+                <div class="control-panel">
+                    <h3>Document Upload & Processing</h3>
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                        <p>Click here or drag and drop documents</p>
+                        <p style="color: #7f8c8d; font-size: 0.9rem;">Supported: PDF, JPG, PNG, TXT</p>
+                        <input type="file" id="fileInput" style="display: none;" multiple 
+                               accept=".pdf,.jpg,.jpeg,.png,.txt" onchange="handleFileUpload(this.files)">
+                    </div>
+                    
+                    <div id="uploadProgress" class="progress-bar" style="display: none;">
+                        <div class="progress-fill" id="uploadProgressFill"></div>
+                    </div>
+                </div>
+                
+                <div id="documentResults" class="status-panel" style="display: none;">
+                    <h4>Processing Results</h4>
+                    <div id="documentList"></div>
+                </div>
+            </div>
+            
+            <!-- Tab 4: System Status -->
+            <div class="tab-content">
+                <div class="control-panel">
+                    <h3>System Health & Monitoring</h3>
+                    <button class="btn" onclick="checkSystemHealth()">Check Health</button>
+                    <button class="btn" onclick="clearLogs()">Clear Logs</button>
+                </div>
+                
+                <div class="status-panel" id="healthStatus">
+                    <h4>System Components</h4>
+                    <div id="componentStatus">
+                        <p>Click "Check Health" to verify system status</p>
+                    </div>
+                </div>
+                
+                <div class="log-output" id="systemLogs">
+                    System ready. Click "Check Health" to initialize monitoring.
+                </div>
+            </div>
+            
+            <!-- Error Panel -->
+            <div class="error-panel" id="errorPanel">
+                <h4>Error</h4>
+                <p id="errorMessage"></p>
+                <button class="btn" onclick="hideError()">Dismiss</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let voiceInitialized = false;
+        let consultationActive = false;
+        let peerConnection = null;
+        let dataChannel = null;
+        let ephemeralToken = null;
+        
+        // Tab switching
+        function switchTab(index) {
+            document.querySelectorAll('.tab').forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+            document.querySelectorAll('.tab-content').forEach((content, i) => {
+                content.classList.toggle('active', i === index);
+            });
+        }
+        
+        // Error handling
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorPanel').style.display = 'block';
+            console.error('Error:', message);
+        }
+        
+        function hideError() {
+            document.getElementById('errorPanel').style.display = 'none';
+        }
+        
+        // Voice system functions
+        window.initializeVoice = async function() {
+            try {
+                updateVoiceStatus('Initializing voice system...');
+                
+                const response = await fetch('/api/initialize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    voiceInitialized = true;
+                    document.getElementById('initVoiceBtn').disabled = true;
+                    document.getElementById('startVoiceBtn').disabled = false;
+                    updateVoiceStatus('Voice system ready - click Start to begin consultation');
+                    logMessage('Voice system initialized successfully');
+                } else {
+                    throw new Error(result.error || 'Failed to initialize');
+                }
+            } catch (error) {
+                showError(`Failed to initialize voice system: ${error.message}`);
+                updateVoiceStatus('Failed to initialize - please try again');
+            }
+        }
+        
+        window.startVoiceChat = async function() {
+            if (!voiceInitialized) {
+                await initializeVoice();
+                if (!voiceInitialized) return;
+            }
+            
+            try {
+                updateVoiceStatus('Setting up WebRTC connection...');
+                
+                // Get ephemeral token
+                const tokenResponse = await fetch('/api/token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const tokenResult = await tokenResponse.json();
+                
+                if (!tokenResult.success) {
+                    throw new Error(tokenResult.error || 'Failed to get token');
+                }
+                
+                ephemeralToken = tokenResult.ephemeral_token;
+                
+                // Setup WebRTC
+                await setupWebRTC();
+                
+                consultationActive = true;
+                document.getElementById('startVoiceBtn').disabled = true;
+                document.getElementById('stopVoiceBtn').disabled = false;
+                document.getElementById('micStatus').classList.add('active');
+                document.getElementById('consultationStatus').style.display = 'block';
+                updateVoiceStatus('Consultation active - AI is listening');
+                logMessage('Voice consultation started');
+                
+            } catch (error) {
+                showError(`Failed to start voice chat: ${error.message}`);
+                updateVoiceStatus('Failed to start - please try again');
+            }
+        }
+        
+        async function setupWebRTC() {
+            const pc = new RTCPeerConnection({
+                iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+            });
+            
+            // Get user media
+            console.log('Requesting microphone access...');
+            const ms = await navigator.mediaDevices.getUserMedia({
+                audio: { 
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    sampleRate: 24000
+                }
+            });
+            console.log('Microphone access granted, tracks:', ms.getTracks().length);
+            
+            // Add audio track to peer connection
+            const audioTrack = ms.getTracks()[0];
+            console.log('Audio track:', audioTrack);
+            pc.addTrack(audioTrack);
+            
+            // Handle incoming audio stream
+            pc.ontrack = (event) => {
+                console.log('Received remote audio track:', event.track);
+                console.log('Track kind:', event.track.kind);
+                console.log('Track enabled:', event.track.enabled);
+                
+                if (event.streams && event.streams[0]) {
+                    console.log('Remote stream received with', event.streams[0].getTracks().length, 'tracks');
+                    
+                    // Create audio element for playback
+                    const audioElement = new Audio();
+                    audioElement.srcObject = event.streams[0];
+                    audioElement.autoplay = true;
+                    audioElement.volume = 1.0;
+                    
+                    // Add event listeners for debugging
+                    audioElement.onloadedmetadata = () => {
+                        console.log('Audio metadata loaded');
+                        logMessage('Audio stream ready for playback');
+                    };
+                    
+                    audioElement.onplay = () => {
+                        console.log('Audio started playing');
+                        logMessage('AI audio playback started');
+                    };
+                    
+                    audioElement.onended = () => {
+                        console.log('Audio playback ended');
+                    };
+                    
+                    audioElement.onerror = (error) => {
+                        console.error('Audio playback error:', error);
+                        logMessage('Audio playback error occurred');
+                    };
+                    
+                    // Store reference to clean up later
+                    window.remoteAudio = audioElement;
+                    
+                    logMessage('Audio playback initialized');
+                } else {
+                    console.warn('No streams in track event');
+                }
+            };
+            
+            // Handle connection state changes
+            pc.onconnectionstatechange = () => {
+                console.log('WebRTC connection state:', pc.connectionState);
+                logMessage(`WebRTC: ${pc.connectionState}`);
+                
+                if (pc.connectionState === 'connected') {
+                    updateVoiceStatus('WebRTC connected - audio streaming active');
+                    logMessage('🎉 WebRTC connection established successfully!');
+                } else if (pc.connectionState === 'connecting') {
+                    updateVoiceStatus('Connecting to OpenAI...');
+                } else if (pc.connectionState === 'failed') {
+                    showError('WebRTC connection failed');
+                    updateVoiceStatus('Connection failed - check console for details');
+                } else if (pc.connectionState === 'disconnected') {
+                    updateVoiceStatus('WebRTC disconnected');
+                }
+            };
+            
+            // Handle ICE connection state changes
+            pc.oniceconnectionstatechange = () => {
+                console.log('ICE connection state:', pc.iceConnectionState);
+                logMessage(`ICE: ${pc.iceConnectionState}`);
+            };
+            
+            // Handle signaling state changes
+            pc.onsignalingstatechange = () => {
+                console.log('Signaling state:', pc.signalingState);
+            };
+            
+            // Setup data channel for function calls
+            const dc = pc.createDataChannel('oai-events', {
+                ordered: true,
+            });
+            
+            dc.onopen = () => {
+                console.log('Data channel opened successfully');
+                logMessage('Data channel connected - ready for AI communication');
+                
+                // Send comprehensive session configuration
+                try {
+                    dc.send(JSON.stringify({
+                        type: 'session.update',
+                        session: {
+                            modalities: ['text', 'audio'],
+                            instructions: `You are DocketVoice, an expert bankruptcy consultation assistant. Your mission is to provide professional, empathetic, and comprehensive bankruptcy guidance.
+
+CORE RESPONSIBILITIES:
+1. Conduct thorough bankruptcy consultations with warmth and professionalism
+2. Systematically collect complete client information using provided function tools
+3. Perform accurate means test analysis and eligibility assessments
+4. Explain complex bankruptcy concepts in clear, accessible language
+5. Generate detailed consultation reports with actionable recommendations
+
+COMMUNICATION STYLE:
+- Professional yet warm and approachable
+- Non-judgmental and empathetic to financial distress
+- Clear and patient in explanations
+- Thorough but efficient in information gathering
+- Encouraging while being realistic about options
+
+TECHNICAL GUIDELINES:
+- Always use function tools to collect and analyze data systematically
+- Ask follow-up questions to ensure complete information
+- Validate information for accuracy and completeness
+- Provide specific timelines and next steps
+- Reference relevant bankruptcy laws and procedures when appropriate
+
+AVAILABLE FUNCTION TOOLS:
+- collect_client_information: Gather personal details, contact info, employment
+- analyze_financial_profile: Process income, expenses, debts, and assets
+- perform_means_test_analysis: Determine Chapter 7 vs Chapter 13 eligibility
+- generate_consultation_report: Create comprehensive consultation summary
+
+IMPORTANT NOTES:
+- This consultation provides general information, not legal advice
+- Recommend attorney consultation for specific legal guidance
+- Maintain strict confidentiality of all client information
+- Focus on Chapter 7 and Chapter 13 options primarily
+- Consider debt management alternatives when appropriate
+
+Begin each consultation by warmly greeting the client and explaining the consultation process.`,
+                            voice: 'alloy',
+                            input_audio_format: 'pcm16',
+                            output_audio_format: 'pcm16',
+                            input_audio_transcription: { model: 'whisper-1' },
+                            turn_detection: { 
+                                type: 'server_vad',
+                                threshold: 0.5,
+                                prefix_padding_ms: 300,
+                                silence_duration_ms: 800
+                            },
+                            tools: [
+                                {
+                                    type: 'function',
+                                    name: 'collect_client_information',
+                                    description: 'Collect comprehensive client information for bankruptcy consultation',
+                                    parameters: {
+                                        type: 'object',
+                                        properties: {
+                                            personal_info: {
+                                                type: 'object',
+                                                properties: {
+                                                    full_name: { type: 'string' },
+                                                    ssn: { type: 'string', pattern: '^\\\\d{3}-\\\\d{2}-\\\\d{4}$' },
+                                                    date_of_birth: { type: 'string', format: 'date' },
+                                                    marital_status: {
+                                                        type: 'string',
+                                                        enum: ['single', 'married', 'divorced', 'widowed', 'separated']
+                                                    },
+                                                    dependents: { type: 'integer', minimum: 0 }
+                                                },
+                                                required: ['full_name']
+                                            },
+                                            contact_info: {
+                                                type: 'object',
+                                                properties: {
+                                                    address: {
+                                                        type: 'object',
+                                                        properties: {
+                                                            street: { type: 'string' },
+                                                            city: { type: 'string' },
+                                                            state: { type: 'string', minLength: 2, maxLength: 2 },
+                                                            zip_code: { type: 'string' }
+                                                        }
+                                                    },
+                                                    phone: { type: 'string' },
+                                                    email: { type: 'string', format: 'email' }
+                                                }
+                                            },
+                                            employment: {
+                                                type: 'object',
+                                                properties: {
+                                                    status: {
+                                                        type: 'string',
+                                                        enum: ['employed', 'unemployed', 'self_employed', 'retired', 'disabled']
+                                                    },
+                                                    employer: { type: 'string' },
+                                                    job_title: { type: 'string' },
+                                                    monthly_income: { type: 'number', minimum: 0 },
+                                                    employment_length: { type: 'string' }
+                                                }
+                                            }
+                                        },
+                                        required: ['personal_info']
+                                    }
+                                },
+                                {
+                                    type: 'function',
+                                    name: 'analyze_financial_profile',
+                                    description: 'Analyze complete financial profile including income, expenses, debts, and assets',
+                                    parameters: {
+                                        type: 'object',
+                                        properties: {
+                                            monthly_income: {
+                                                type: 'object',
+                                                properties: {
+                                                    employment: { type: 'number', minimum: 0 },
+                                                    self_employment: { type: 'number', minimum: 0 },
+                                                    social_security: { type: 'number', minimum: 0 },
+                                                    pension: { type: 'number', minimum: 0 },
+                                                    other: { type: 'number', minimum: 0 }
+                                                }
+                                            },
+                                            monthly_expenses: {
+                                                type: 'object',
+                                                properties: {
+                                                    housing: { type: 'number', minimum: 0 },
+                                                    utilities: { type: 'number', minimum: 0 },
+                                                    food: { type: 'number', minimum: 0 },
+                                                    transportation: { type: 'number', minimum: 0 },
+                                                    insurance: { type: 'number', minimum: 0 },
+                                                    healthcare: { type: 'number', minimum: 0 },
+                                                    childcare: { type: 'number', minimum: 0 },
+                                                    debt_payments: { type: 'number', minimum: 0 },
+                                                    other: { type: 'number', minimum: 0 }
+                                                }
+                                            },
+                                            debts: {
+                                                type: 'array',
+                                                items: {
+                                                    type: 'object',
+                                                    properties: {
+                                                        creditor: { type: 'string' },
+                                                        debt_type: {
+                                                            type: 'string',
+                                                            enum: ['credit_card', 'medical', 'personal_loan', 'mortgage', 'auto_loan', 'student_loan', 'tax_debt', 'other']
+                                                        },
+                                                        current_balance: { type: 'number', minimum: 0 },
+                                                        monthly_payment: { type: 'number', minimum: 0 },
+                                                        interest_rate: { type: 'number', minimum: 0 },
+                                                        is_secured: { type: 'boolean' },
+                                                        collateral: { type: 'string' }
+                                                    },
+                                                    required: ['creditor', 'debt_type', 'current_balance']
+                                                }
+                                            },
+                                            assets: {
+                                                type: 'array',
+                                                items: {
+                                                    type: 'object',
+                                                    properties: {
+                                                        asset_type: {
+                                                            type: 'string',
+                                                            enum: ['real_estate', 'vehicle', 'bank_account', 'investment', 'retirement', 'personal_property', 'business', 'other']
+                                                        },
+                                                        description: { type: 'string' },
+                                                        current_value: { type: 'number', minimum: 0 },
+                                                        debt_against: { type: 'number', minimum: 0 },
+                                                        equity: { type: 'number' }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        required: ['monthly_income', 'monthly_expenses', 'debts']
+                                    }
+                                },
+                                {
+                                    type: 'function',
+                                    name: 'perform_means_test_analysis',
+                                    description: 'Perform comprehensive Chapter 7 means test and Chapter 13 feasibility analysis',
+                                    parameters: {
+                                        type: 'object',
+                                        properties: {
+                                            client_data: {
+                                                type: 'object',
+                                                properties: {
+                                                    state: { type: 'string', minLength: 2, maxLength: 2 },
+                                                    household_size: { type: 'integer', minimum: 1, maximum: 15 },
+                                                    monthly_income: { type: 'number', minimum: 0 },
+                                                    monthly_expenses: { type: 'number', minimum: 0 },
+                                                    total_debt: { type: 'number', minimum: 0 },
+                                                    secured_debt: { type: 'number', minimum: 0 },
+                                                    unsecured_debt: { type: 'number', minimum: 0 }
+                                                },
+                                                required: ['state', 'household_size', 'monthly_income']
+                                            },
+                                            special_circumstances: {
+                                                type: 'array',
+                                                items: {
+                                                    type: 'string',
+                                                    enum: ['recent_job_loss', 'medical_emergency', 'divorce', 'disability', 'military_service', 'elderly_care', 'other']
+                                                }
+                                            },
+                                            previous_bankruptcies: {
+                                                type: 'array',
+                                                items: {
+                                                    type: 'object',
+                                                    properties: {
+                                                        chapter: { type: 'string', enum: ['7', '11', '12', '13'] },
+                                                        filing_date: { type: 'string', format: 'date' },
+                                                        discharge_date: { type: 'string', format: 'date' }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        required: ['client_data']
+                                    }
+                                },
+                                {
+                                    type: 'function',
+                                    name: 'generate_consultation_report',
+                                    description: 'Generate comprehensive bankruptcy consultation report with recommendations',
+                                    parameters: {
+                                        type: 'object',
+                                        properties: {
+                                            consultation_summary: {
+                                                type: 'object',
+                                                properties: {
+                                                    primary_financial_issues: {
+                                                        type: 'array',
+                                                        items: { type: 'string' }
+                                                    },
+                                                    debt_categories: {
+                                                        type: 'object',
+                                                        properties: {
+                                                            secured: { type: 'number' },
+                                                            unsecured: { type: 'number' },
+                                                            priority: { type: 'number' }
+                                                        }
+                                                    },
+                                                    asset_summary: {
+                                                        type: 'object',
+                                                        properties: {
+                                                            total_value: { type: 'number' },
+                                                            exempt_value: { type: 'number' },
+                                                            non_exempt_value: { type: 'number' }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            recommendations: {
+                                                type: 'object',
+                                                properties: {
+                                                    primary_recommendation: {
+                                                        type: 'string',
+                                                        enum: ['chapter_7', 'chapter_13', 'debt_management', 'negotiate_settlements', 'no_action_needed']
+                                                    },
+                                                    alternative_options: {
+                                                        type: 'array',
+                                                        items: { type: 'string' }
+                                                    },
+                                                    urgency: {
+                                                        type: 'string',
+                                                        enum: ['immediate', 'within_30_days', 'within_90_days', 'within_6_months', 'no_urgency']
+                                                    }
+                                                }
+                                            },
+                                            next_steps: {
+                                                type: 'array',
+                                                items: {
+                                                    type: 'object',
+                                                    properties: {
+                                                        step: { type: 'string' },
+                                                        timeline: { type: 'string' },
+                                                        importance: { type: 'string', enum: ['critical', 'important', 'recommended'] },
+                                                        description: { type: 'string' }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        required: ['consultation_summary', 'recommendations', 'next_steps']
+                                    }
+                                }
+                            ],
+                            tool_choice: 'auto',
+                            temperature: 0.7,
+                            max_response_output_tokens: 4096
+                        }
+                    }));
+                    console.log('Sent comprehensive session update to OpenAI');
+                    logMessage('AI configured with full bankruptcy consultation capabilities');
+                } catch (error) {
+                    console.error('Failed to send session update:', error);
+                    logMessage('Failed to configure AI with bankruptcy consultation capabilities');
+                }
+            };
+            
+            dc.onerror = (error) => {
+                console.error('Data channel error:', error);
+                logMessage('Data channel error occurred');
+            };
+            
+            dc.onmessage = (event) => {
+                try {
+                    console.log('Raw data channel message:', event.data);
+                    const message = JSON.parse(event.data);
+                    console.log('Parsed message:', message);
+                    
+                    if (message.type === 'function_call') {
+                        handleFunctionCall(message.function_name, message.arguments);
+                    } else if (message.type === 'response') {
+                        logMessage('AI response received');
+                    } else if (message.type === 'session.created') {
+                        logMessage('OpenAI session created');
+                    } else if (message.type === 'session.updated') {
+                        logMessage('OpenAI session updated');
+                    } else if (message.type === 'conversation.item.created') {
+                        logMessage('Conversation item created');
+                    } else if (message.type === 'response.created') {
+                        logMessage('AI response started');
+                    } else if (message.type === 'response.audio.delta') {
+                        // Audio data is being streamed
+                        console.log('Receiving audio data...');
+                    } else if (message.type === 'response.audio.done') {
+                        logMessage('AI audio response complete');
+                    } else {
+                        console.log('Unknown message type:', message.type);
+                        logMessage(`Received: ${message.type}`);
+                    }
+                } catch (error) {
+                    console.error('Error parsing data channel message:', error);
+                    console.error('Raw message:', event.data);
+                }
+            };
+            
+            // Create offer
+            console.log('Creating WebRTC offer...');
+            const offer = await pc.createOffer();
+            console.log('Offer created:', offer.sdp.substring(0, 200) + '...');
+            await pc.setLocalDescription(offer);
+            console.log('Local description set');
+            
+            // Send to our Flask backend which handles OpenAI connection
+            console.log('Sending offer to backend...');
+            const sdpResponse = await fetch('/api/webrtc-session', {
+                method: 'POST',
+                body: JSON.stringify({
+                    sdp: offer.sdp,
+                    ephemeral_token: ephemeralToken
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            if (!sdpResponse.ok) {
+                console.error('Backend response not OK:', sdpResponse.status);
+                throw new Error(`WebRTC setup error: ${sdpResponse.status}`);
+            }
+            
+            const answerSdp = await sdpResponse.text();
+            console.log('Received answer from backend:', answerSdp.substring(0, 200) + '...');
+            
+            await pc.setRemoteDescription({
+                type: 'answer',
+                sdp: answerSdp,
+            });
+            console.log('Remote description set');
+            
+            peerConnection = pc;
+            dataChannel = dc;
+            
+            logMessage('WebRTC setup complete - waiting for connection...');
+        }
+        
+        async function handleFunctionCall(functionName, arguments) {
+            try {
+                logMessage(`Handling function call: ${functionName}`);
+                
+                const response = await fetch('/api/function-call', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        function_name: functionName,
+                        arguments: arguments
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    logMessage(`Function call completed: ${functionName}`);
+                    updateConsultationProgress();
+                } else {
+                    logMessage(`Function call failed: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Error handling function call:', error);
+                logMessage(`Function call error: ${error.message}`);
+            }
+        }
+        
+        window.stopVoiceChat = function() {
+            consultationActive = false;
+            
+            // Stop and clean up remote audio
+            if (window.remoteAudio) {
+                window.remoteAudio.pause();
+                window.remoteAudio.srcObject = null;
+                window.remoteAudio = null;
+            }
+            
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            
+            if (dataChannel) {
+                dataChannel.close();
+                dataChannel = null;
+            }
+            
+            document.getElementById('startVoiceBtn').disabled = false;
+            document.getElementById('stopVoiceBtn').disabled = true;
+            document.getElementById('micStatus').classList.remove('active');
+            document.getElementById('consultationStatus').style.display = 'none';
+            updateVoiceStatus('Consultation stopped - click Start to resume');
+            logMessage('Voice consultation stopped');
+        }
+        
+        function updateVoiceStatus(status) {
+            document.getElementById('voiceStatus').textContent = status;
+        }
+        
+        function updateConsultationProgress() {
+            const progress = Math.min(100, Math.random() * 30 + 10); // Simulated progress
+            document.getElementById('consultationProgress').style.width = progress + '%';
+        }
+        
+        // Case management functions
+        async function refreshCaseStatus() {
+            try {
+                const response = await fetch('/api/case-status');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const status = result.case_status;
+                    document.getElementById('completionPercent').textContent = 
+                        Math.round(status.completion_percentage) + '%';
+                    document.getElementById('formsCompleted').textContent = 
+                        `${status.forms_completed}/${status.total_forms}`;
+                    document.getElementById('readyStatus').textContent = 
+                        status.ready_for_filing ? 'Yes' : 'No';
+                    logMessage('Case status refreshed');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                showError(`Failed to refresh case status: ${error.message}`);
+            }
+        }
+        
+        async function generateDocuments() {
+            try {
+                logMessage('Generating bankruptcy documents...');
+                
+                const response = await fetch('/api/generate-documents', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    logMessage(`Generated ${result.documents.length} documents successfully`);
+                    await refreshCaseStatus();
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                showError(`Failed to generate documents: ${error.message}`);
+            }
+        }
+        
+        async function performMeansTest() {
+            try {
+                logMessage('Performing means test analysis...');
+                
+                const response = await fetch('/api/function-call', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        function_name: 'perform_means_test_analysis',
+                        arguments: {}
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    logMessage('Means test analysis completed');
+                    await refreshCaseStatus();
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                showError(`Failed to perform means test: ${error.message}`);
+            }
+        }
+        
+        // Document upload functions
+        function handleFileUpload(files) {
+            if (!files || files.length === 0) return;
+            
+            Array.from(files).forEach(file => uploadDocument(file));
+        }
+        
+        async function uploadDocument(file) {
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                document.getElementById('uploadProgress').style.display = 'block';
+                document.getElementById('uploadProgressFill').style.width = '0%';
+                
+                // Simulate upload progress
+                const progressInterval = setInterval(() => {
+                    const current = parseFloat(document.getElementById('uploadProgressFill').style.width) || 0;
+                    if (current < 90) {
+                        document.getElementById('uploadProgressFill').style.width = (current + 10) + '%';
+                    }
+                }, 100);
+                
+                const response = await fetch('/api/upload-document', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                clearInterval(progressInterval);
+                document.getElementById('uploadProgressFill').style.width = '100%';
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    logMessage(`Document ${file.name} processed successfully`);
+                    displayDocumentResult(file.name, result);
+                } else {
+                    throw new Error(result.error);
+                }
+                
+                setTimeout(() => {
+                    document.getElementById('uploadProgress').style.display = 'none';
+                }, 1000);
+                
+            } catch (error) {
+                showError(`Failed to upload ${file.name}: ${error.message}`);
+                document.getElementById('uploadProgress').style.display = 'none';
+            }
+        }
+        
+        function displayDocumentResult(filename, result) {
+            const resultsDiv = document.getElementById('documentResults');
+            const listDiv = document.getElementById('documentList');
+            
+            const resultItem = document.createElement('div');
+            resultItem.style.cssText = 'margin: 10px 0; padding: 10px; background: #f0f8ff; border-radius: 5px;';
+            resultItem.innerHTML = `
+                <strong>${filename}</strong><br>
+                Type: ${result.document_type || 'Unknown'}<br>
+                Status: Processed successfully
+            `;
+            
+            listDiv.appendChild(resultItem);
+            resultsDiv.style.display = 'block';
+        }
+        
+        // System monitoring functions
+        async function checkSystemHealth() {
+            try {
+                const response = await fetch('/api/health');
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayHealthStatus(result);
+                    logMessage('System health check completed');
+                } else {
+                    throw new Error('Health check failed');
+                }
+            } catch (error) {
+                showError(`Health check failed: ${error.message}`);
+            }
+        }
+        
+        function displayHealthStatus(health) {
+            const statusDiv = document.getElementById('componentStatus');
+            const components = health.components;
+            
+            let html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">';
+            
+            Object.entries(components).forEach(([name, status]) => {
+                const statusColor = status ? '#27ae60' : '#e74c3c';
+                const statusText = status ? 'Online' : 'Offline';
+                
+                html += `
+                    <div style="padding: 10px; background: white; border-radius: 5px; border-left: 4px solid ${statusColor};">
+                        <strong>${name.replace(/_/g, ' ').toUpperCase()}</strong><br>
+                        <span style="color: ${statusColor};">${statusText}</span>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            html += `<p style="margin-top: 15px;"><strong>Version:</strong> ${health.version}</p>`;
+            
+            statusDiv.innerHTML = html;
+        }
+        
+        function logMessage(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logDiv = document.getElementById('systemLogs');
+            logDiv.innerHTML += `\n[${timestamp}] ${message}`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function clearLogs() {
+            document.getElementById('systemLogs').innerHTML = 'Logs cleared.';
+        }
+        
+        // Initialize drag and drop
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.querySelector('.upload-area');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            uploadArea.addEventListener('drop', handleDrop, false);
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            function highlight(e) {
+                uploadArea.classList.add('dragover');
+            }
+            
+            function unhighlight(e) {
+                uploadArea.classList.remove('dragover');
+            }
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFileUpload(files);
+            }
+            
+            // Initial health check
+            setTimeout(checkSystemHealth, 1000);
+        });
+    </script>
+</body>
+</html>
