@@ -104,11 +104,7 @@ class SOTABankruptcyAgentProduction:
     async def _welcome_client(self):
         """Warm, professional welcome"""
         welcome_message = """
-        Hello, and welcome to DocketVoice. I'm here to help you complete your bankruptcy paperwork through a simple conversation.
-        
-        I understand this is likely a difficult time, and I want you to know that thousands of people go through this process successfully every year. My job is to make this as easy and stress-free as possible for you.
-        
-        We'll have a natural conversation where I'll ask you questions about your situation, and I'll use your answers to fill out all the official bankruptcy forms that attorneys need. Everything we discuss is confidential.
+        Hello, and welcome to DocketVoice. I'm here to help you complete your bankruptcy paperwork through a simple conversation
         
         This usually takes about 45 minutes to an hour, depending on your situation. We can take breaks anytime you need them. Are you ready to begin?
         """
@@ -133,13 +129,10 @@ class SOTABankruptcyAgentProduction:
     async def _determine_filing_type(self):
         """Determine Chapter 7 or 13 filing"""
         filing_question = """
-        First, I need to understand what type of bankruptcy you're considering. There are two main types:
+        First, I need to understand what type of bankruptcy you're considering.
         
-        Chapter 7 is often called "liquidation" - it typically discharges most of your debts in about 3-4 months, but you may need to give up some assets.
+        Chapter 7 is often called "liquidation" or Chapter 13, which is a "repayment plan".
         
-        Chapter 13 is a "repayment plan" - you keep your assets but make payments over 3-5 years based on what you can afford.
-        
-        Which type are you interested in, or would you like me to help you figure out which might be better for your situation?
         """
         
         await self.voice.speak(filing_question)
