@@ -4,225 +4,902 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DocketVoice - Integrated Bankruptcy Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-50: #f8fafc;
+            --primary-100: #f1f5f9;
+            --primary-200: #e2e8f0;
+            --primary-300: #cbd5e1;
+            --primary-400: #94a3b8;
+            --primary-500: #64748b;
+            --primary-600: #475569;
+            --primary-700: #334155;
+            --primary-800: #1e293b;
+            --primary-900: #0f172a;
+            
+            --accent-50: #fafbfc;
+            --accent-100: #f4f6f8;
+            --accent-200: #e5e9f0;
+            --accent-300: #d0d7e4;
+            --accent-400: #9ca3af;
+            --accent-500: #6b7280;
+            --accent-600: #4b5563;
+            --accent-700: #374151;
+            --accent-800: #1f2937;
+            --accent-900: #111827;
+            
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 0.75rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            --spacing-3xl: 4rem;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             margin: 0;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            min-height: 100vh;
+            padding: 0;
+            background: var(--primary-50);
+            color: var(--primary-800);
+            line-height: 1.6;
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
-        .container {
-            max-width: 1400px;
+        
+        /* ============ DEMO MODE & PROGRESS FEATURES ============ */
+
+        .demo-wrapper {
+            padding: var(--spacing-xl);
+        }
+        
+        .demo-intro {
+            text-align: center;
+            max-width: 800px;
             margin: 0 auto;
+        }
+        
+        .demo-intro h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-900);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .demo-intro p {
+            font-size: 1.1rem;
+            color: var(--primary-600);
+            margin-bottom: var(--spacing-xl);
+            line-height: 1.6;
+        }
+        
+        .demo-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            font-weight: 500;
+            color: var(--primary-700);
+        }
+        
+        .feature-item .icon {
+            width: 24px;
+            height: 24px;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+        
+        .demo-progress-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .demo-progress-header h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-900);
+            margin: 0;
+        }
+        
+        .demo-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .demo-progress-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .progress-details h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-900);
+            margin: 0 0 var(--spacing-sm) 0;
+        }
+        
+        .progress-details p {
+            color: var(--primary-600);
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        .demo-sections h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-900);
+            margin: 0 0 var(--spacing-md) 0;
+        }
+        
+        .demo-active-controls {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border);
+        }
+        
+        .demo-mode-banner {
+            background: linear-gradient(180deg, var(--primary-50) 0%, #ffffff 100%);
+            color: var(--primary-800);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-xl);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--primary-200);
+            display: none;
+        }
+        
+        .demo-mode-banner.active {
+            display: block;
+            animation: slideInFromTop 0.6s ease-out;
+        }
+        
+        .demo-banner-content h2 {
+            margin: 0 0 var(--spacing-sm) 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-900);
+        }
+        
+        .demo-banner-content p {
+            margin: 0 0 var(--spacing-lg) 0;
+            opacity: 1;
+            font-size: 1.1rem;
+            color: var(--primary-600);
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .demo-btn {
+            background: #ffffff;
+            border: 1px solid var(--primary-300);
+            color: var(--primary-800);
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .demo-btn:hover {
+            background: var(--primary-50);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .demo-btn.primary {
+            background: var(--success);
+            color: #ffffff;
+            border-color: var(--success);
+        }
+        
+        .demo-btn.primary:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+        
+        /* Live Progress Ring */
+        .progress-ring-container {
+            position: relative;
+            display: inline-block;
+            margin-right: var(--spacing-md);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+            width: 60px;
+            height: 60px;
+        }
+        
+        .progress-ring-bg {
+            fill: none;
+            stroke: var(--primary-100);
+            stroke-width: 4;
+        }
+        
+        .progress-ring-progress {
+            fill: none;
+            stroke: var(--primary-500);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 157; /* 2π × 25 */
+            stroke-dashoffset: 157;
+            transition: stroke-dashoffset 0.8s ease-in-out;
+        }
+        
+        .progress-ring-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-700);
+        }
+        
+        /* Section Badges */
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: 6px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-right: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .section-badge.pending {
+            background: var(--primary-100);
+            color: var(--primary-700);
+            border: 1px solid var(--primary-200);
+        }
+        
+        .section-badge.in-progress {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        .section-badge.completed {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        .section-badge.skipped {
+            background: var(--primary-200);
+            color: var(--primary-600);
+            border: 1px solid var(--primary-300);
+        }
+        
+        /* Real-time Eligibility Meter Enhancements */
+        .eligibility-meter {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--primary-200);
+            margin-bottom: var(--spacing-xl);
+            transition: all 0.3s ease;
+        }
+        
+        .eligibility-meter.updating {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .meter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .meter-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-900);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: 0.875rem;
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .metric-card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            text-align: center;
+            border: 1px solid var(--primary-200);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card.updating {
+            animation: metricUpdate 0.8s ease;
+        }
+        
+        .metric-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .metric-title {
+            font-weight: 600;
+            color: var(--primary-900);
+            font-size: 0.9rem;
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--primary-600);
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+            transition: color 0.5s ease;
+        }
+        
+        .metric-value.positive {
+            color: var(--success);
+        }
+        
+        .metric-value.negative {
+            color: var(--error);
+        }
+        
+        .metric-value.neutral {
+            color: var(--primary-700);
+        }
+        
+        .metric-context {
+            font-size: 0.8125rem;
+            color: var(--primary-600);
+        }
+        
+        /* Chapter Recommendation Cards */
+        .chapter-recommendations {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .chapter-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            text-align: center;
+            border: 2px solid var(--primary-200);
+            transition: all 0.5s ease;
+            position: relative;
             overflow: hidden;
         }
         
-        .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        .chapter-card.recommended {
+            border-color: var(--success);
+            background: #f0fdf4;
+        }
+        
+        .chapter-card.not-recommended {
+            border-color: var(--primary-300);
+            background: var(--primary-50);
+            opacity: 0.7;
+        }
+        
+        .chapter-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+            transition: color 0.5s ease;
+        }
+        
+        .chapter-number.recommended {
+            color: var(--success);
+        }
+        
+        .chapter-number.not-recommended {
+            color: var(--primary-400);
+        }
+        
+        .chapter-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--primary-900);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .chapter-reason {
+            font-size: 0.875rem;
+            color: var(--primary-600);
+            line-height: 1.5;
+        }
+        
+        .recommended-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--success);
             color: white;
-            padding: 20px 30px;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 700;
+            transform: rotate(12deg);
+        }
+        
+        /* Animations */
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes metricUpdate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); background: var(--primary-100); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Skip Links */
+        .skip-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: 8px 16px;
+            background: var(--primary-100);
+            color: var(--primary-700);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0 var(--spacing-sm) var(--spacing-sm) 0;
+        }
+        
+        .skip-link:hover {
+            background: var(--primary-200);
+            transform: translateY(-1px);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: transparent;
+            min-height: 100vh;
+            box-shadow: none;
+            padding: 0 var(--spacing-xl) var(--spacing-2xl);
+        }
+        
+        .header {
+            background: #ffffff;
+            color: var(--primary-900);
+            padding: var(--spacing-2xl) var(--spacing-xl);
             text-align: center;
+            border-bottom: 1px solid var(--primary-200);
         }
         
         .header h1 {
             margin: 0;
             font-size: 2rem;
-            font-weight: 300;
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
         
         .header p {
-            margin: 8px 0 0 0;
-            opacity: 0.9;
-            font-size: 1rem;
+            margin: var(--spacing-sm) 0 0 0;
+            opacity: 1;
+            font-size: 1.0625rem;
+            font-weight: 400;
+            color: var(--primary-600);
         }
         
         .content {
-            padding: 25px;
+            padding: var(--spacing-2xl);
         }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: var(--spacing-lg);
+            }
+            
+            .header {
+                padding: var(--spacing-xl) var(--spacing-lg);
+            }
+            
+            .header h1 {
+                font-size: 1.875rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+        }
+        
         
         .tabs {
             display: flex;
-            border-bottom: 2px solid #ecf0f1;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            border-bottom: 1px solid var(--primary-200);
+            margin-bottom: var(--spacing-2xl);
+            gap: var(--spacing-xs);
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none;
         }
         
         .tab {
-            padding: 10px 20px;
+            padding: var(--spacing-lg) var(--spacing-xl);
             cursor: pointer;
-            background: #f8f9fa;
+            background: transparent;
             border: none;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             font-weight: 500;
-            color: #7f8c8d;
-            transition: all 0.3s ease;
-            border-radius: 6px 6px 0 0;
-            margin-right: 3px;
-            margin-bottom: -2px;
+            color: var(--primary-500);
+            transition: all 0.2s ease;
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+            position: relative;
+            white-space: nowrap;
+            min-width: fit-content;
+        }
+        
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-900);
+            transform: scaleX(0);
+            transition: transform 0.2s ease;
+        }
+        
+        .tab:hover {
+            color: var(--primary-700);
+            background: var(--primary-50);
         }
         
         .tab.active {
-            background: #3498db;
-            color: white;
-            transform: translateY(-1px);
+            color: var(--primary-900);
+            background: white;
+            font-weight: 600;
+        }
+        
+        .tab.active::after {
+            transform: scaleX(1);
         }
         
         .tab-content {
             display: none;
+            animation: fadeIn 0.3s ease;
         }
         
         .tab-content.active {
             display: block;
         }
         
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
         .control-panel {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            border-left: 3px solid #3498db;
+            background: transparent;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid var(--primary-200);
         }
         
         .control-panel h3 {
-            margin-top: 0;
-            font-size: 1.1rem;
+            margin: 0 0 var(--spacing-lg) 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-900);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
         }
         
         .status-panel {
-            background: #e8f5e8;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            border-left: 3px solid #27ae60;
+            background: #ffffff;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid var(--primary-200);
+            box-shadow: var(--shadow-sm);
         }
         
         .status-panel h4 {
-            margin-top: 0;
-            font-size: 1rem;
+            margin: 0 0 var(--spacing-md) 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary-900);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
         }
         
         .error-panel {
-            background: #fef2f2;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            border-left: 3px solid #e74c3c;
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid #fca5a5;
             display: none;
         }
         
+        .error-panel h4 {
+            margin: 0 0 var(--spacing-md) 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--error);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
         .btn {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
+            background: #ffffff;
+            color: var(--primary-800);
+            border: 1px solid var(--primary-300);
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--radius-md);
             cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            margin-right: 8px;
-            margin-bottom: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-right: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            box-shadow: var(--shadow-sm);
         }
         
         .btn:hover {
+            background: var(--primary-50);
+            box-shadow: var(--shadow-md);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: var(--shadow-sm);
         }
         
         .btn:disabled {
-            background: #bdc3c7;
+            background: var(--primary-100);
+            color: var(--primary-500);
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
         
         .btn-success {
-            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+            border-color: #059669;
         }
         
         .btn-danger {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            background: var(--error);
+            color: white;
+            border-color: var(--error);
         }
         
+        .btn-danger:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
+        
+        .btn-secondary {
+            background: var(--primary-100);
+            color: var(--primary-700);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary-200);
+        }
+        
+        
         .progress-bar {
-            background: #ecf0f1;
-            border-radius: 8px;
-            height: 16px;
-            margin: 12px 0;
+            background: var(--primary-200);
+            border-radius: var(--radius-lg);
+            height: 8px;
+            margin: var(--spacing-lg) 0;
             overflow: hidden;
         }
         
         .progress-fill {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            background: linear-gradient(90deg, var(--primary-900) 0%, var(--primary-700) 100%);
             height: 100%;
             width: 0%;
             transition: width 0.5s ease;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
         }
         
         .case-status {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
         }
         
         .status-card {
             background: white;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #ecf0f1;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--primary-200);
             text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+        
+        .status-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
         }
         
         .status-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #3498db;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-900);
+            margin-bottom: var(--spacing-xs);
         }
         
         .status-label {
-            color: #7f8c8d;
-            font-size: 0.8rem;
-            margin-top: 4px;
+            color: var(--primary-500);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         
         .log-output {
-            background: #2c3e50;
-            color: #ecf0f1;
-            padding: 15px;
-            border-radius: 6px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.8rem;
-            max-height: 250px;
+            background: #ffffff;
+            color: var(--primary-800);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-size: 0.8125rem;
+            max-height: 300px;
             overflow-y: auto;
-            margin-top: 15px;
+            margin-top: var(--spacing-lg);
+            border: 1px solid var(--primary-200);
+            line-height: 1.5;
         }
         
         .upload-area {
-            border: 2px dashed #bdc3c7;
-            border-radius: 6px;
-            padding: 30px;
+            border: 2px dashed var(--primary-300);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-3xl);
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             cursor: pointer;
-            margin: 15px 0;
+            margin: var(--spacing-xl) 0;
+            background: var(--primary-50);
         }
         
         .upload-area:hover {
-            border-color: #3498db;
-            background: #f8f9fa;
+            border-color: var(--primary-500);
+            background: var(--primary-100);
         }
         
         .upload-area.dragover {
-            border-color: #2980b9;
-            background: #e8f4fd;
+            border-color: var(--primary-700);
+            background: var(--primary-100);
+            transform: scale(1.02);
+        }
+        
+        .upload-text {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: var(--primary-700);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .upload-subtext {
+            color: var(--primary-500);
+            font-size: 0.875rem;
         }
         
         .hidden {
@@ -231,36 +908,369 @@
         
         .microphone-status {
             display: inline-block;
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: #e74c3c;
-            margin-left: 8px;
+            background: var(--error);
+            margin-left: var(--spacing-xs);
             animation: pulse 2s infinite;
         }
         
         .microphone-status.active {
-            background: #27ae60;
+            background: var(--success);
         }
         
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
         }
         
         .voice-controls {
             text-align: center;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            margin: 15px 0;
+            padding: var(--spacing-lg);
+            background: transparent;
+            border-radius: var(--radius-lg);
+            margin: var(--spacing-xl) 0;
+            border: 1px solid var(--primary-200);
         }
         
         .voice-status {
             font-size: 1rem;
-            margin-bottom: 12px;
-            color: #2c3e50;
+            margin-bottom: var(--spacing-lg);
+            color: var(--primary-800);
+            font-weight: 500;
+        }
+        
+        .icon {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .component-status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+        }
+        
+        .component-card {
+            padding: var(--spacing-lg);
+            background: white;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--primary-200);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .component-card h5 {
+            margin: 0 0 var(--spacing-sm) 0;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary-700);
+        }
+        
+        .component-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-weight: 500;
+        }
+        
+        .status-online {
+            color: var(--success);
+        }
+        
+        .status-offline {
+            color: var(--error);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+        
+        .eligibility-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .eligibility-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary-900);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .chapter-recommendation {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .red-flag-alert {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            border-left: 4px solid var(--error);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            margin: var(--spacing-md) 0;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .red-flag-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+            color: var(--error);
+        }
+        
+        .red-flag-message {
+            color: var(--primary-700);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .follow-up-prompt {
+            font-style: italic;
+            color: var(--primary-600);
+            font-size: 0.9rem;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .undo-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--primary-200);
+        }
+        
+        .undo-text {
+            font-size: 0.875rem;
+            color: var(--primary-600);
+        }
+        
+        .undo-button {
+            background: var(--primary-100);
+            color: var(--primary-700);
+            border: 1px solid var(--primary-300);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8125rem;
+            transition: all 0.2s ease;
+        }
+        
+        .undo-button:hover {
+            background: var(--primary-200);
+            border-color: var(--primary-400);
+        }
+        
+        .handoff-panel {
+            background: #ffffff;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            margin: var(--spacing-xl) 0;
+            border: 1px solid var(--primary-200);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .handoff-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .handoff-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-900);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .handoff-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .handoff-stat {
+            background: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--primary-200);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .handoff-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-900);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .handoff-stat-label {
+            font-size: 0.875rem;
+            color: var(--primary-600);
+            font-weight: 500;
+        }
+        
+        .unresolved-items {
+            background: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--primary-200);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .unresolved-header {
+            font-weight: 600;
+            color: var(--primary-900);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .unresolved-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .unresolved-item {
+            padding: var(--spacing-sm);
+            border-bottom: 1px solid var(--primary-100);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--primary-700);
+        }
+        
+        .unresolved-item:last-child {
+            border-bottom: none;
+        }
+        
+        .financial-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-xl) 0;
+        }
+        
+        .conversation-tracker {
+            background: white;
+            border: 1px solid var(--primary-200);
+            border-radius: var(--radius-lg);
+            margin: var(--spacing-xl) 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .conversation-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--primary-200);
+            font-weight: 600;
+            color: var(--primary-900);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: var(--primary-50);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+        
+        .conversation-item {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-bottom: 1px solid var(--primary-100);
+            position: relative;
+        }
+        
+        .conversation-item:last-child {
+            border-bottom: none;
+        }
+        
+        .conversation-question {
+            font-weight: 500;
+            color: var(--primary-900);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .conversation-answer {
+            color: var(--primary-700);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .conversation-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8125rem;
+            color: var(--primary-500);
+        }
+        
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .tab {
+                border-radius: 0;
+                padding: var(--spacing-md) var(--spacing-lg);
+            }
+            
+            .case-status {
+                grid-template-columns: 1fr;
+            }
+            
+            .component-status-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                justify-content: center;
+                margin-right: 0;
+            }
+            
+            .chapter-recommendation {
+                flex-direction: column;
+            }
+            
+            .financial-metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            .handoff-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .eligibility-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-sm);
+            }
         }
     </style>
 </head>
@@ -271,35 +1281,246 @@
             <p>Integrated Bankruptcy Consultation with WebRTC Voice Interface</p>
         </div>
         
+        <!-- Live Progress Header -->
+        <div class="progress-header" id="progressHeader" style="display: none;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-lg);">
+                <div style="display: flex; align-items: center;">
+                    <div class="progress-ring-container">
+                        <svg class="progress-ring">
+                            <circle class="progress-ring-bg" cx="30" cy="30" r="25"></circle>
+                            <circle class="progress-ring-progress" cx="30" cy="30" r="25" id="progressCircle"></circle>
+                        </svg>
+                        <div class="progress-ring-text" id="progressText">0%</div>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--primary-900);">Case Progress</h3>
+                        <p style="margin: 0; color: var(--primary-600); font-size: 0.875rem;" id="progressStatus">Starting consultation...</p>
+                    </div>
+                </div>
+                <div class="live-indicator">
+                    <div class="live-dot"></div>
+                    LIVE
+                </div>
+            </div>
+            
+            <!-- Section Badges -->
+            <div class="section-badges" id="sectionBadges">
+                <div class="section-badge pending" data-section="intro">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    Introduction
+                </div>
+                <div class="section-badge pending" data-section="income">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                    </svg>
+                    Income
+                </div>
+                <div class="section-badge pending" data-section="expenses">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                    Expenses
+                </div>
+                <div class="section-badge pending" data-section="debts">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Debts
+                </div>
+                <div class="section-badge pending" data-section="assets">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    Assets
+                </div>
+                <div class="section-badge pending" data-section="review">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Review
+                </div>
+            </div>
+            
+            <!-- Skip Links -->
+            <div style="margin-top: var(--spacing-md);">
+                <a href="#" class="skip-link" onclick="skipToSection('income')">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 14px; height: 14px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Skip to Income
+                </a>
+                <a href="#" class="skip-link" onclick="skipToSection('eligibility')">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 14px; height: 14px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Jump to Results
+                </a>
+            </div>
+        </div>
+        
         <div class="content">
             <!-- Tab Navigation -->
             <div class="tabs">
-                <button class="tab active" onclick="switchTab(0)">Voice Consultation</button>
-                <button class="tab" onclick="switchTab(1)">Case Management</button>
-                <button class="tab" onclick="switchTab(2)">Document Processing</button>
-                <button class="tab" onclick="switchTab(3)">System Status</button>
+                <button class="tab active" onclick="switchTab(0)">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                    </svg>
+                    Voice Consultation
+                </button>
+                <button class="tab" onclick="switchTab(1)">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Case Management
+                </button>
+                <button class="tab" onclick="switchTab(2)">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                    Document Processing
+                </button>
+                <button class="tab" onclick="switchTab(3)">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    System Status
+                </button>
+                <button class="tab" onclick="switchTab(4)">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1a3 3 0 000-6h-1m1 6V9a3 3 0 003-3m-3 3h3m-3 3v1a3 3 0 003 3M9 10v1a3 3 0 003 3m3-3a3 3 0 013 3v1"/>
+                    </svg>
+                    Demo Walkthrough
+                </button>
             </div>
             
             <!-- Tab 1: Voice Consultation -->
             <div class="tab-content active">
+                <!-- Enhanced Real-time Eligibility Meter -->
+                <div class="eligibility-meter" id="eligibilityMeter" style="display: none;">
+                    <div class="meter-header">
+                        <div class="meter-title">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            Real-time Eligibility Analysis
+                        </div>
+                        <div class="live-indicator">
+                            <div class="live-dot"></div>
+                            LIVE
+                        </div>
+                    </div>
+                    
+                    <!-- Financial Metrics Grid -->
+                    <div class="metrics-grid">
+                        <div class="metric-card" id="incomeMetric">
+                            <div class="metric-label">Income vs. Median</div>
+                            <div class="metric-value" id="incomeRatio">--</div>
+                            <div class="metric-context" id="incomeContext">Calculating...</div>
+                        </div>
+                        <div class="metric-card" id="disposableMetric">
+                            <div class="metric-label">Disposable Income</div>
+                            <div class="metric-value" id="disposableIncome">--</div>
+                            <div class="metric-context">Monthly surplus/deficit</div>
+                        </div>
+                        <div class="metric-card" id="debtMetric">
+                            <div class="metric-label">Debt Burden</div>
+                            <div class="metric-value" id="debtRatio">--</div>
+                            <div class="metric-context" id="debtContext">Debt-to-income ratio</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chapter Recommendations -->
+                    <div class="chapter-recommendations">
+                        <div class="chapter-card" id="chapter7Card">
+                            <div class="chapter-number" id="chapter7Number">7</div>
+                            <div class="chapter-title">Chapter 7</div>
+                            <div class="chapter-reason" id="chapter7Reason">Analyzing eligibility...</div>
+                            <div class="recommended-badge" style="display: none;">RECOMMENDED</div>
+                        </div>
+                        <div class="chapter-card" id="chapter13Card">
+                            <div class="chapter-number" id="chapter13Number">13</div>
+                            <div class="chapter-title">Chapter 13</div>
+                            <div class="chapter-reason" id="chapter13Reason">Analyzing eligibility...</div>
+                            <div class="recommended-badge" style="display: none;">RECOMMENDED</div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="refreshEligibility()" style="background: var(--primary-500); color: white; border: none; padding: 12px 24px; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; width: 100%; margin-top: var(--spacing-lg);">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; margin-right: 8px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Refresh Analysis
+                    </button>
+                </div>
+                
+                <!-- Red Flag Alerts -->
+                <div id="redFlagContainer"></div>
+                
                 <div class="control-panel">
-                    <h3>Voice Consultation System</h3>
+                    <h3>
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                        </svg>
+                        Voice Consultation System
+                    </h3>
                     <div class="voice-controls">
                         <div class="voice-status" id="voiceStatus">Ready to start consultation</div>
-                        <button class="btn" id="initVoiceBtn" onclick="initializeVoice()">
-                            Initialize Voice System
-                        </button>
-                        <button class="btn btn-success" id="startVoiceBtn" onclick="startVoiceChat()" disabled>
-                            Start Voice Consultation <span class="microphone-status" id="micStatus"></span>
-                        </button>
-                        <button class="btn btn-danger" id="stopVoiceBtn" onclick="stopVoiceChat()" disabled>
-                            Stop Consultation
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" id="initVoiceBtn" onclick="initializeVoice()">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                                Initialize Voice System
+                            </button>
+                            <button class="btn btn-success" id="startVoiceBtn" onclick="startVoiceChat()" disabled>
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 8h10a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                Start Voice Consultation 
+                                <span class="microphone-status" id="micStatus"></span>
+                            </button>
+                            <button class="btn btn-danger" id="stopVoiceBtn" onclick="stopVoiceChat()" disabled>
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10h6v4H9z"/>
+                                </svg>
+                                Stop Consultation
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Undo/Correct Controls -->
+                    <div class="undo-controls" id="undoControls" style="display: none;">
+                        <div class="undo-text">Need to change a previous answer?</div>
+                        <button class="undo-button" onclick="showUndoOptions()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 14px; height: 14px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                            </svg>
+                            Change Previous Answer
                         </button>
                     </div>
                 </div>
                 
+                <!-- Conversation Tracker -->
+                <div class="conversation-tracker" id="conversationTracker" style="display: none;">
+                    <div class="conversation-header">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        Conversation History
+                    </div>
+                    <div id="conversationList"></div>
+                </div>
+                
                 <div class="status-panel" id="consultationStatus" style="display: none;">
-                    <h4>Consultation in Progress</h4>
+                    <h4>
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Consultation in Progress
+                    </h4>
                     <p>The AI is listening and ready to help with your bankruptcy consultation.</p>
                     <div class="progress-bar">
                         <div class="progress-fill" id="consultationProgress"></div>
@@ -310,14 +1531,41 @@
             <!-- Tab 2: Case Management -->
             <div class="tab-content">
                 <div class="control-panel">
-                    <h3>Bankruptcy Case Management</h3>
-                    <button class="btn" onclick="refreshCaseStatus()">Refresh Status</button>
-                    <button class="btn btn-success" onclick="generateDocuments()">Generate Documents</button>
-                    <button class="btn" onclick="performMeansTest()">Perform Means Test</button>
+                    <h3>
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Bankruptcy Case Management
+                    </h3>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="refreshCaseStatus()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            Refresh Status
+                        </button>
+                        <button class="btn btn-success" onclick="generateDocuments()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            Generate Documents
+                        </button>
+                        <button class="btn" onclick="performMeansTest()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                            </svg>
+                            Perform Means Test
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="status-panel">
-                    <h4>Current Case Status</h4>
+                    <h4>
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Current Case Status
+                    </h4>
                     <div class="case-status" id="caseStatusDisplay">
                         <div class="status-card">
                             <div class="status-value" id="completionPercent">0%</div>
@@ -333,15 +1581,89 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Attorney Handoff Packet -->
+                <div class="handoff-panel" id="handoffPanel" style="display: none;">
+                    <div class="handoff-header">
+                        <div class="handoff-title">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6"/>
+                            </svg>
+                            Attorney Handoff Packet
+                        </div>
+                        <button class="btn btn-success" onclick="generateHandoffPacket()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Generate PDF Packet
+                        </button>
+                    </div>
+                    
+                    <div class="handoff-summary">
+                        <div class="handoff-stat">
+                            <div class="handoff-stat-value" id="handoffCompletion">85%</div>
+                            <div class="handoff-stat-label">Overall Complete</div>
+                        </div>
+                        <div class="handoff-stat">
+                            <div class="handoff-stat-value" id="handoffForms">6/8</div>
+                            <div class="handoff-stat-label">Forms Ready</div>
+                        </div>
+                        <div class="handoff-stat">
+                            <div class="handoff-stat-value" id="handoffIssues">3</div>
+                            <div class="handoff-stat-label">Items to Review</div>
+                        </div>
+                        <div class="handoff-stat">
+                            <div class="handoff-stat-value" id="handoffTime">42 min</div>
+                            <div class="handoff-stat-label">Session Time</div>
+                        </div>
+                    </div>
+                    
+                    <div class="unresolved-items">
+                        <div class="unresolved-header">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.856-.833-2.64 0L3.174 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                            </svg>
+                            Items Requiring Attorney Review
+                        </div>
+                        <ul class="unresolved-list" id="unresolvedItems">
+                            <li class="unresolved-item">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Verify asset valuation for home equity
+                            </li>
+                            <li class="unresolved-item">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Confirm state-specific exemptions
+                            </li>
+                            <li class="unresolved-item">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Review recent transfer to family member
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             
             <!-- Tab 3: Document Processing -->
             <div class="tab-content">
                 <div class="control-panel">
-                    <h3>Document Upload & Processing</h3>
+                    <h3>
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                        Document Upload & Processing
+                    </h3>
                     <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                        <p>Click here or drag and drop documents</p>
-                        <p style="color: #7f8c8d; font-size: 0.9rem;">Supported: PDF, JPG, PNG, TXT</p>
+                        <svg class="icon" style="width: 48px; height: 48px; margin: 0 auto var(--spacing-md) auto; color: var(--primary-400);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                        <div class="upload-text">Click here or drag and drop documents</div>
+                        <div class="upload-subtext">Supported: PDF, JPG, PNG, TXT</div>
                         <input type="file" id="fileInput" style="display: none;" multiple 
                                accept=".pdf,.jpg,.jpeg,.png,.txt" onchange="handleFileUpload(this.files)">
                     </div>
@@ -352,7 +1674,12 @@
                 </div>
                 
                 <div id="documentResults" class="status-panel" style="display: none;">
-                    <h4>Processing Results</h4>
+                    <h4>
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Processing Results
+                    </h4>
                     <div id="documentList"></div>
                 </div>
             </div>
@@ -360,13 +1687,35 @@
             <!-- Tab 4: System Status -->
             <div class="tab-content">
                 <div class="control-panel">
-                    <h3>System Health & Monitoring</h3>
-                    <button class="btn" onclick="checkSystemHealth()">Check Health</button>
-                    <button class="btn" onclick="clearLogs()">Clear Logs</button>
+                    <h3>
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        System Health & Monitoring
+                    </h3>
+                    <div class="btn-group">
+                        <button class="btn" onclick="checkSystemHealth()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Check Health
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearLogs()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Clear Logs
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="status-panel" id="healthStatus">
-                    <h4>System Components</h4>
+                    <h4>
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        System Components
+                    </h4>
                     <div id="componentStatus">
                         <p>Click "Check Health" to verify system status</p>
                     </div>
@@ -379,9 +1728,174 @@
             
             <!-- Error Panel -->
             <div class="error-panel" id="errorPanel">
-                <h4>Error</h4>
+                <h4>
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Error
+                </h4>
                 <p id="errorMessage"></p>
-                <button class="btn" onclick="hideError()">Dismiss</button>
+                <button class="btn btn-secondary" onclick="hideError()">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Dismiss
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tab 5: Demo Walkthrough -->
+        <div class="tab-content">
+            <div class="demo-wrapper">
+                <h3>
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1a3 3 0 000-6h-1m1 6V9a3 3 0 003-3m-3 3h3m-3 3v1a3 3 0 003 3M9 10v1a3 3 0 003 3m3-3a3 3 0 013 3v1"/>
+                    </svg>
+                    Demo Walkthrough
+                </h3>
+                
+                <!-- Demo Introduction Panel -->
+                <div class="control-panel" id="demoIntroPanel">
+                    <div class="demo-intro">
+                        <h4>Experience DocketVoice in Action</h4>
+                        <p>Take a complete guided tour through a realistic bankruptcy consultation case. You'll see how our AI-powered system analyzes financial data, provides real-time eligibility assessments, and generates the necessary documentation.</p>
+                        
+                        <div class="demo-features">
+                            <div class="feature-item">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>3-minute complete consultation</span>
+                            </div>
+                            <div class="feature-item">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                <span>Realistic case: Sarah Chen, Single Mother</span>
+                            </div>
+                            <div class="feature-item">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                </svg>
+                                <span>Real-time eligibility analysis</span>
+                            </div>
+                            <div class="feature-item">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                <span>Automated document generation</span>
+                            </div>
+                        </div>
+                        
+                        <div class="demo-controls">
+                            <button class="btn btn-primary" onclick="startCompleteDemoWalkthrough()">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1a3 3 0 000-6h-1m1 6V9a3 3 0 003-3m-3 3h3m-3 3v1a3 3 0 003 3M9 10v1a3 3 0 003 3m3-3a3 3 0 013 3v1"/>
+                                </svg>
+                                Start Complete Walkthrough
+                            </button>
+                            <button class="btn" onclick="loadRealisticData()">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                                </svg>
+                                Load Sample Data Only
+                            </button>
+                            <button class="btn btn-secondary" onclick="quickJumpToResults()">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Jump to Final Results
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Demo Progress Panel -->
+                <div class="control-panel" id="demoProgressPanel" style="display: none;">
+                    <div class="demo-progress-header">
+                        <h4>Demo in Progress</h4>
+                        <div class="demo-status">
+                            <div class="live-indicator">
+                                <div class="live-dot"></div>
+                                DEMO ACTIVE
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Progress Ring -->
+                    <div class="demo-progress-container">
+                        <div class="progress-ring-container">
+                            <svg class="progress-ring">
+                                <circle class="progress-ring-bg" cx="50" cy="50" r="40"></circle>
+                                <circle class="progress-ring-progress" cx="50" cy="50" r="40" id="demoProgressCircle"></circle>
+                            </svg>
+                            <div class="progress-ring-text" id="demoProgressText">0%</div>
+                        </div>
+                        <div class="progress-details">
+                            <h5 id="demoCurrentSection">Starting Demo...</h5>
+                            <p id="demoSectionDescription">Initializing demo walkthrough</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Section Progress -->
+                    <div class="demo-sections">
+                        <h5>Demo Sections</h5>
+                        <div class="section-badges" id="demoSectionBadges">
+                            <div class="section-badge pending" data-section="intro">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                Introduction
+                            </div>
+                            <div class="section-badge pending" data-section="income">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                                </svg>
+                                Income Analysis
+                            </div>
+                            <div class="section-badge pending" data-section="expenses">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v2a2 2 0 002 2z"/>
+                                </svg>
+                                Expense Review
+                            </div>
+                            <div class="section-badge pending" data-section="debts">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                </svg>
+                                Debt Assessment
+                            </div>
+                            <div class="section-badge pending" data-section="assets">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                                Asset Evaluation
+                            </div>
+                            <div class="section-badge pending" data-section="review">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Final Review
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Demo Controls -->
+                    <div class="demo-active-controls">
+                        <button class="btn btn-danger" onclick="exitDemoMode()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            Exit Demo
+                        </button>
+                        <button class="btn" onclick="pauseResumeDemo()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="pauseResumeIcon">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span id="pauseResumeText">Pause Demo</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -395,6 +1909,1050 @@
         let ephemeralToken = null;
         let realtimeModel = null;
         let sessionUpdated = false;
+        
+        // Enhanced state for new features
+        let currentFinancialData = {
+            monthlyIncome: 0,
+            monthlyExpenses: 0,
+            totalDebts: 0,
+            householdSize: 1,
+            state: 'CA',
+            housingExpense: 0,
+            assetValuation: false,
+            exemptionsConfirmed: false,
+            recentTransfers: false,
+            assets: []
+        };
+        let conversationHistory = [];
+        let lastQuestionField = null;
+        let redFlags = [];
+        
+        // Demo mode state
+        let isDemoMode = false;
+        let demoProgress = 0;
+        let demoTimer = null;
+        let currentSection = 'intro';
+        let demoPaused = false;
+        let demoSectionTimers = [];
+        const totalSections = 6;
+        const demoSections = [
+            { 
+                name: 'intro', 
+                title: 'Introduction & Setup', 
+                description: 'Gathering basic client information and case setup',
+                duration: 3000 
+            },
+            { 
+                name: 'income', 
+                title: 'Income Analysis', 
+                description: 'Analyzing monthly income from all sources',
+                duration: 4000 
+            },
+            { 
+                name: 'expenses', 
+                title: 'Expense Review', 
+                description: 'Reviewing monthly expenses and living costs',
+                duration: 4000 
+            },
+            { 
+                name: 'debts', 
+                title: 'Debt Assessment', 
+                description: 'Cataloging all debts and payment obligations',
+                duration: 5000 
+            },
+            { 
+                name: 'assets', 
+                title: 'Asset Evaluation', 
+                description: 'Evaluating assets and exemption eligibility',
+                duration: 4000 
+            },
+            { 
+                name: 'review', 
+                title: 'Final Review & Recommendations', 
+                description: 'Generating final eligibility assessment and documents',
+                duration: 3000 
+            }
+        ];
+        
+        // State-specific median income data (2024 estimates by household size)
+        const stateMedianIncomes = {
+            'AL': [3890, 4850, 5120, 5720, 6190, 6540, 7240],
+            'AK': [5890, 7340, 7760, 8670, 9380, 9920, 10980],
+            'AZ': [4520, 5640, 5960, 6660, 7210, 7620, 8430],
+            'AR': [3450, 4300, 4540, 5080, 5500, 5810, 6430],
+            'CA': [5890, 7340, 7760, 8670, 9380, 9920, 10980],
+            'CO': [5320, 6630, 7010, 7830, 8470, 8960, 9910],
+            'CT': [6010, 7490, 7920, 8850, 9580, 10130, 11210],
+            'DE': [5210, 6500, 6870, 7680, 8310, 8790, 9720],
+            'FL': [4210, 5250, 5550, 6200, 6710, 7100, 7850],
+            'GA': [4320, 5390, 5700, 6370, 6890, 7290, 8070],
+            'HI': [6890, 8590, 9080, 10150, 10980, 11620, 12850],
+            'ID': [4230, 5270, 5570, 6220, 6740, 7130, 7890],
+            'IL': [5120, 6380, 6750, 7540, 8160, 8630, 9550],
+            'IN': [4450, 5550, 5870, 6560, 7100, 7510, 8310],
+            'IA': [4670, 5820, 6160, 6880, 7440, 7870, 8710],
+            'KS': [4520, 5640, 5960, 6660, 7210, 7620, 8430],
+            'KY': [3890, 4850, 5120, 5720, 6190, 6540, 7240],
+            'LA': [3720, 4640, 4910, 5480, 5930, 6270, 6940],
+            'ME': [4670, 5820, 6160, 6880, 7440, 7870, 8710],
+            'MD': [6230, 7770, 8210, 9170, 9920, 10490, 11610],
+            'MA': [6540, 8150, 8620, 9630, 10420, 11020, 12190],
+            'MI': [4560, 5680, 6010, 6720, 7270, 7690, 8510],
+            'MN': [5450, 6790, 7180, 8020, 8680, 9180, 10160],
+            'MS': [3450, 4300, 4540, 5080, 5500, 5810, 6430],
+            'MO': [4320, 5390, 5700, 6370, 6890, 7290, 8070],
+            'MT': [4450, 5550, 5870, 6560, 7100, 7510, 8310],
+            'NE': [4780, 5960, 6300, 7040, 7620, 8060, 8920],
+            'NV': [4780, 5960, 6300, 7040, 7620, 8060, 8920],
+            'NH': [5670, 7070, 7470, 8340, 9030, 9550, 10570],
+            'NJ': [6540, 8150, 8620, 9630, 10420, 11020, 12190],
+            'NM': [3890, 4850, 5120, 5720, 6190, 6540, 7240],
+            'NY': [5340, 6660, 7040, 7860, 8510, 9000, 9960],
+            'NC': [4230, 5270, 5570, 6220, 6740, 7130, 7890],
+            'ND': [5450, 6790, 7180, 8020, 8680, 9180, 10160],
+            'OH': [4560, 5680, 6010, 6720, 7270, 7690, 8510],
+            'OK': [3890, 4850, 5120, 5720, 6190, 6540, 7240],
+            'OR': [4890, 6100, 6450, 7210, 7800, 8250, 9130],
+            'PA': [4890, 6100, 6450, 7210, 7800, 8250, 9130],
+            'RI': [5670, 7070, 7470, 8340, 9030, 9550, 10570],
+            'SC': [4010, 5000, 5290, 5910, 6390, 6760, 7480],
+            'SD': [4670, 5820, 6160, 6880, 7440, 7870, 8710],
+            'TN': [3890, 4850, 5120, 5720, 6190, 6540, 7240],
+            'TX': [4320, 5390, 5700, 6370, 6890, 7290, 8070],
+            'UT': [5230, 6520, 6890, 7700, 8330, 8810, 9750],
+            'VT': [5230, 6520, 6890, 7700, 8330, 8810, 9750],
+            'VA': [5670, 7070, 7470, 8340, 9030, 9550, 10570],
+            'WA': [5890, 7340, 7760, 8670, 9380, 9920, 10980],
+            'WV': [3560, 4440, 4690, 5240, 5670, 6000, 6640],
+            'WI': [4890, 6100, 6450, 7210, 7800, 8250, 9130],
+            'WY': [4780, 5960, 6300, 7040, 7620, 8060, 8920]
+        };
+        
+        
+        // ============== DEMO MODE & PROGRESS SYSTEM ==============
+        
+        // Demo Mode Functions
+        function showDemoMode() {
+            const banner = document.getElementById('demoModeBanner');
+            banner.classList.add('active');
+            logMessage('Demo mode activated - try the sample case for a quick tour!');
+        }
+        
+        function startSampleCase() {
+            isDemoMode = true;
+            const banner = document.getElementById('demoModeBanner');
+            const progressHeader = document.getElementById('progressHeader');
+            
+            if (banner) banner.style.display = 'none';
+            if (progressHeader) progressHeader.style.display = 'block';
+            
+            // Load realistic sample data
+            loadRealisticData();
+            
+            // Show progress and start guided tour
+            updateProgress(0);
+            updateSectionBadge('intro', 'in-progress');
+            
+            logMessage('🚀 Demo Mode: Starting sample bankruptcy case - "Sarah Chen, Single Mother"');
+            
+            // Auto-progress through sections with realistic timing
+            setTimeout(() => progressToSection('income'), 2000);
+        }
+        
+        function startCompleteDemoWalkthrough() {
+            isDemoMode = true;
+            demoPaused = false;
+            
+            // Switch to Voice Consultation tab to show the action
+            switchTab(0);
+            
+            // Hide demo intro panel, show progress panel
+            const introPanel = document.getElementById('demoIntroPanel');
+            const progressPanel = document.getElementById('demoProgressPanel');
+            
+            if (introPanel) introPanel.style.display = 'none';
+            if (progressPanel) progressPanel.style.display = 'block';
+            
+            // Load realistic sample data
+            loadRealisticData();
+            
+            // Initialize demo progress
+            currentSection = 'intro';
+            demoProgress = 0;
+            updateDemoProgress();
+            updateDemoSectionBadge('intro', 'in-progress');
+            
+            // Show eligibility meter and progress in main tab
+            const eligibilityMeter = document.getElementById('eligibilityMeter');
+            const progressHeader = document.getElementById('progressHeader');
+            
+            if (eligibilityMeter) eligibilityMeter.style.display = 'block';
+            if (progressHeader) progressHeader.style.display = 'block';
+            
+            logMessage('🚀 Complete Demo Walkthrough: Starting comprehensive consultation demo');
+            
+            // Start the complete walkthrough
+            runCompleteDemoSequence();
+        }
+        
+        function runCompleteDemoSequence() {
+            if (demoPaused) return;
+            
+            let sectionIndex = 0;
+            
+            function processNextSection() {
+                if (demoPaused || !isDemoMode || sectionIndex >= demoSections.length) return;
+                
+                const section = demoSections[sectionIndex];
+                currentSection = section.name;
+                
+                // Update demo tab progress
+                updateDemoProgress();
+                updateDemoCurrentSection(section.title, section.description);
+                updateDemoSectionBadge(section.name, 'in-progress');
+                
+                // Update main tab progress
+                updateSectionBadge(section.name, 'in-progress');
+                updateProgress((sectionIndex / demoSections.length) * 100);
+                
+                logMessage(`📋 Demo Section: ${section.title} - ${section.description}`);
+                
+                // Complete current section after duration
+                const timer = setTimeout(() => {
+                    if (demoPaused || !isDemoMode) return;
+                    
+                    // Mark section as completed
+                    updateDemoSectionBadge(section.name, 'completed');
+                    updateSectionBadge(section.name, 'completed');
+                    
+                    sectionIndex++;
+                    
+                    if (sectionIndex < demoSections.length) {
+                        // Continue to next section
+                        processNextSection();
+                    } else {
+                        // Demo completed
+                        completeDemoWalkthrough();
+                    }
+                }, section.duration);
+                
+                demoSectionTimers.push(timer);
+            }
+            
+            // Start the sequence
+            processNextSection();
+        }
+        
+        function completeDemoWalkthrough() {
+            // Update final progress
+            demoProgress = 100;
+            updateDemoProgress();
+            updateDemoCurrentSection('Demo Complete!', 'All sections completed successfully');
+            
+            updateProgress(100);
+            logMessage('✅ Demo Walkthrough Complete: All sections processed successfully');
+            
+            // Show completion summary
+            setTimeout(() => {
+                if (isDemoMode) {
+                    logMessage('📊 Demo Results: Sarah Chen qualifies for Chapter 7 bankruptcy - all documents generated');
+                }
+            }, 1000);
+        }
+        
+        function pauseResumeDemo() {
+            if (!isDemoMode) return;
+            
+            demoPaused = !demoPaused;
+            const pauseResumeText = document.getElementById('pauseResumeText');
+            const pauseResumeIcon = document.getElementById('pauseResumeIcon');
+            
+            if (demoPaused) {
+                // Clear all timers
+                demoSectionTimers.forEach(timer => clearTimeout(timer));
+                demoSectionTimers = [];
+                
+                if (pauseResumeText) pauseResumeText.textContent = 'Resume Demo';
+                if (pauseResumeIcon) {
+                    pauseResumeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1a3 3 0 000-6h-1m1 6V9a3 3 0 003-3m-3 3h3m-3 3v1a3 3 0 003 3M9 10v1a3 3 0 003 3m3-3a3 3 0 013 3v1"/>';
+                }
+                logMessage('⏸️ Demo paused');
+            } else {
+                if (pauseResumeText) pauseResumeText.textContent = 'Pause Demo';
+                if (pauseResumeIcon) {
+                    pauseResumeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+                }
+                logMessage('▶️ Demo resumed');
+                runCompleteDemoSequence();
+            }
+        }
+        
+        function exitDemoMode() {
+            isDemoMode = false;
+            demoPaused = false;
+            
+            // Clear all timers
+            demoSectionTimers.forEach(timer => clearTimeout(timer));
+            demoSectionTimers = [];
+            
+            // Reset demo tab UI
+            const introPanel = document.getElementById('demoIntroPanel');
+            const progressPanel = document.getElementById('demoProgressPanel');
+            
+            if (introPanel) introPanel.style.display = 'block';
+            if (progressPanel) progressPanel.style.display = 'none';
+            
+            // Reset main tab UI
+            const eligibilityMeter = document.getElementById('eligibilityMeter');
+            const progressHeader = document.getElementById('progressHeader');
+            
+            if (eligibilityMeter) eligibilityMeter.style.display = 'none';
+            if (progressHeader) progressHeader.style.display = 'none';
+            
+            // Reset all section badges
+            demoSections.forEach(section => {
+                updateDemoSectionBadge(section.name, 'pending');
+                updateSectionBadge(section.name, 'pending');
+            });
+            
+            // Reset progress
+            demoProgress = 0;
+            updateDemoProgress();
+            updateProgress(0);
+            
+            logMessage('🛑 Demo mode exited - returned to normal operation');
+        }
+        
+        function updateDemoProgress() {
+            const progressText = document.getElementById('demoProgressText');
+            const progressCircle = document.getElementById('demoProgressCircle');
+            
+            if (progressText) progressText.textContent = Math.round(demoProgress) + '%';
+            
+            if (progressCircle) {
+                const circumference = 2 * Math.PI * 40; // radius = 40
+                const offset = circumference - (demoProgress / 100) * circumference;
+                progressCircle.style.strokeDasharray = circumference;
+                progressCircle.style.strokeDashoffset = offset;
+            }
+        }
+        
+        function updateDemoCurrentSection(title, description) {
+            const sectionTitle = document.getElementById('demoCurrentSection');
+            const sectionDesc = document.getElementById('demoSectionDescription');
+            
+            if (sectionTitle) sectionTitle.textContent = title;
+            if (sectionDesc) sectionDesc.textContent = description;
+        }
+        
+        function updateDemoSectionBadge(sectionName, status) {
+            const badge = document.querySelector(`#demoSectionBadges .section-badge[data-section="${sectionName}"]`);
+            if (badge) {
+                badge.className = `section-badge ${status}`;
+            }
+        }
+        
+        function loadRealisticData() {
+            // Load Sarah Chen's realistic case data
+            currentFinancialData = {
+                monthlyIncome: 4850,
+                monthlyExpenses: 4200,
+                totalDebts: 78500,
+                householdSize: 3,
+                state: 'CA',
+                housingExpense: 2100,
+                assetValuation: true,
+                exemptionsConfirmed: false,
+                recentTransfers: false,
+                assets: ['2016 Honda Civic', 'Checking Account', 'Retirement 401k']
+            };
+            
+            // Add sample conversation history
+            conversationHistory = [
+                {
+                    question: 'What is your full legal name?',
+                    answer: 'Sarah Chen',
+                    fieldKey: 'fullName',
+                    timestamp: new Date(Date.now() - 300000).toISOString()
+                },
+                {
+                    question: 'What is your monthly income from all sources?',
+                    answer: '$4,850 from my job as a nursing assistant',
+                    fieldKey: 'monthlyIncome',
+                    timestamp: new Date(Date.now() - 240000).toISOString()
+                },
+                {
+                    question: 'What are your monthly housing expenses?',
+                    answer: '$2,100 for rent and utilities',
+                    fieldKey: 'housingExpense',
+                    timestamp: new Date(Date.now() - 180000).toISOString()
+                },
+                {
+                    question: 'How many people live in your household?',
+                    answer: 'Three - myself and my two children',
+                    fieldKey: 'householdSize',
+                    timestamp: new Date(Date.now() - 120000).toISOString()
+                }
+            ];
+            
+            updateEligibilityMeter();
+            updateConversationDisplay();
+            logMessage('✅ Loaded realistic case data for demo');
+        }
+        
+        function quickJumpToResults() {
+            loadRealisticData();
+            
+            // Complete all sections
+            ['intro', 'income', 'expenses', 'debts', 'assets'].forEach(section => {
+                updateSectionBadge(section, 'completed');
+            });
+            updateSectionBadge('review', 'in-progress');
+            
+            updateProgress(90);
+            
+            // Show eligibility meter
+            const eligibilityMeter = document.getElementById('eligibilityMeter');
+            if (eligibilityMeter) {
+                eligibilityMeter.style.display = 'block';
+                eligibilityMeter.classList.add('updating');
+                setTimeout(() => eligibilityMeter.classList.remove('updating'), 800);
+            }
+            
+            // Show handoff panel
+            setTimeout(() => {
+                generateHandoffPacket();
+            }, 1000);
+            
+            logMessage('⚡ Quick demo: Jumped to final results');
+        }
+        
+        function exitDemoMode() {
+            isDemoMode = false;
+            demoProgress = 0;
+            currentSection = 'intro';
+            
+            const banner = document.getElementById('demoModeBanner');
+            const progressHeader = document.getElementById('progressHeader');
+            
+            banner.style.display = 'none';
+            progressHeader.style.display = 'none';
+            
+            // Reset data
+            currentFinancialData = {
+                monthlyIncome: 0,
+                monthlyExpenses: 0,
+                totalDebts: 0,
+                householdSize: 1,
+                state: 'CA',
+                housingExpense: 0,
+                assetValuation: false,
+                exemptionsConfirmed: false,
+                recentTransfers: false,
+                assets: []
+            };
+            conversationHistory = [];
+            redFlags = [];
+            
+            // Hide eligibility meter
+            const eligibilityMeter = document.getElementById('eligibilityMeter');
+            if (eligibilityMeter) {
+                eligibilityMeter.style.display = 'none';
+            }
+            
+            logMessage('Demo mode ended - ready for live consultation');
+        }
+        
+        // Progress System Functions
+        function updateProgress(percentage) {
+            demoProgress = percentage;
+            const progressText = document.getElementById('progressText');
+            const progressCircle = document.getElementById('progressCircle');
+            const progressStatus = document.getElementById('progressStatus');
+            
+            if (progressText) {
+                progressText.textContent = `${Math.round(percentage)}%`;
+            }
+            
+            if (progressCircle) {
+                const circumference = 157; // 2π × 25
+                const offset = circumference - (percentage / 100) * circumference;
+                progressCircle.style.strokeDashoffset = offset;
+            }
+            
+            if (progressStatus) {
+                if (percentage < 20) {
+                    progressStatus.textContent = 'Getting started...';
+                } else if (percentage < 40) {
+                    progressStatus.textContent = 'Collecting financial information...';
+                } else if (percentage < 60) {
+                    progressStatus.textContent = 'Analyzing debts and assets...';
+                } else if (percentage < 80) {
+                    progressStatus.textContent = 'Running means test analysis...';
+                } else if (percentage < 95) {
+                    progressStatus.textContent = 'Preparing recommendations...';
+                } else {
+                    progressStatus.textContent = 'Consultation complete!';
+                }
+            }
+        }
+        
+        function updateSectionBadge(section, status) {
+            const badge = document.querySelector(`[data-section="${section}"]`);
+            if (badge) {
+                badge.className = `section-badge ${status}`;
+                
+                // Add completion checkmark for completed sections
+                if (status === 'completed') {
+                    const existingCheck = badge.querySelector('.check-icon');
+                    if (!existingCheck) {
+                        const checkIcon = document.createElement('svg');
+                        checkIcon.className = 'icon check-icon';
+                        checkIcon.style.width = '16px';
+                        checkIcon.style.height = '16px';
+                        checkIcon.setAttribute('fill', 'none');
+                        checkIcon.setAttribute('stroke', 'currentColor');
+                        checkIcon.setAttribute('viewBox', '0 0 24 24');
+                        checkIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
+                        badge.appendChild(checkIcon);
+                    }
+                }
+            }
+        }
+        
+        function progressToSection(section) {
+            // Update previous section to completed
+            if (currentSection !== section) {
+                updateSectionBadge(currentSection, 'completed');
+            }
+            
+            // Update current section
+            currentSection = section;
+            updateSectionBadge(section, 'in-progress');
+            
+            // Update progress percentage
+            const sectionProgress = {
+                'intro': 15,
+                'income': 30,
+                'expenses': 45,
+                'debts': 60,
+                'assets': 75,
+                'review': 90
+            };
+            
+            updateProgress(sectionProgress[section] || 0);
+            
+            // Show eligibility meter after income section
+            if (section === 'expenses' || section === 'debts' || section === 'assets' || section === 'review') {
+                const eligibilityMeter = document.getElementById('eligibilityMeter');
+                if (eligibilityMeter && eligibilityMeter.style.display === 'none') {
+                    eligibilityMeter.style.display = 'block';
+                    eligibilityMeter.classList.add('updating');
+                    setTimeout(() => eligibilityMeter.classList.remove('updating'), 800);
+                }
+                updateEligibilityMeter();
+            }
+        }
+        
+        function skipToSection(section) {
+            if (!isDemoMode && section !== 'eligibility') {
+                // Start demo mode if not already active
+                startSampleCase();
+                setTimeout(() => progressToSection(section), 500);
+            } else {
+                progressToSection(section);
+            }
+            
+            logMessage(`Skipped to ${section} section`);
+        }
+        
+        // Enhanced eligibility meter with animations
+        function updateEligibilityMeter() {
+            if (!currentFinancialData.monthlyIncome || currentFinancialData.monthlyIncome === 0) {
+                return; // Not enough data yet
+            }
+            
+            const eligibilityMeter = document.getElementById('eligibilityMeter');
+            if (eligibilityMeter) {
+                eligibilityMeter.style.display = 'block';
+                eligibilityMeter.classList.add('updating');
+                setTimeout(() => eligibilityMeter.classList.remove('updating'), 800);
+            }
+            
+            // Calculate income ratio to median
+            const medianIncome = getMedianIncome(currentFinancialData.state, currentFinancialData.householdSize);
+            const incomeRatio = (currentFinancialData.monthlyIncome / medianIncome) * 100;
+            
+            // Calculate disposable income
+            const disposableIncome = currentFinancialData.monthlyIncome - currentFinancialData.monthlyExpenses;
+            
+            // Calculate debt-to-income ratio
+            const debtRatio = currentFinancialData.totalDebts > 0 ? 
+                (currentFinancialData.totalDebts / (currentFinancialData.monthlyIncome * 12)) * 100 : 0;
+            
+            // Update metrics with animations
+            updateIncomeMetric(incomeRatio, medianIncome);
+            updateDisposableIncomeMetric(disposableIncome);
+            updateDebtRatioMetric(debtRatio);
+            updateChapterRecommendation(incomeRatio, disposableIncome, debtRatio);
+            
+            // Check for red flags
+            checkForRedFlags();
+            
+            // Log the update for demo purposes
+            if (isDemoMode) {
+                logMessage(`📊 Live Update: Income ${Math.round(incomeRatio)}% of median → ${incomeRatio <= 100 ? 'Chapter 7 likely' : 'Chapter 13 likely'}`);
+            }
+        }
+        
+        function getMedianIncome(state, householdSize) {
+            const stateData = stateMedianIncomes[state] || stateMedianIncomes['CA'];
+            // Array format: index 0 = household size 1, etc. Max index 6 for 7+ people
+            const index = Math.min(Math.max(householdSize - 1, 0), 6);
+            return stateData[index] || stateData[6];
+        }
+        
+        function updateIncomeMetric(ratio, medianIncome) {
+            const ratioElement = document.getElementById('incomeRatio');
+            const contextElement = document.getElementById('incomeContext');
+            const metricCard = document.getElementById('incomeMetric');
+            
+            // Add animation
+            if (metricCard) {
+                metricCard.classList.add('updating');
+                setTimeout(() => metricCard.classList.remove('updating'), 800);
+            }
+            
+            if (ratioElement) {
+                ratioElement.textContent = `${Math.round(ratio)}%`;
+                
+                if (ratio > 120) {
+                    ratioElement.className = 'metric-value negative';
+                } else if (ratio > 100) {
+                    ratioElement.className = 'metric-value neutral';
+                } else {
+                    ratioElement.className = 'metric-value positive';
+                }
+            }
+            
+            if (contextElement) {
+                contextElement.textContent = `State median: $${medianIncome.toLocaleString()}/mo`;
+            }
+        }
+        
+        function updateDisposableIncomeMetric(disposable) {
+            const disposableElement = document.getElementById('disposableIncome');
+            const metricCard = document.getElementById('disposableMetric');
+            
+            // Add animation
+            if (metricCard) {
+                metricCard.classList.add('updating');
+                setTimeout(() => metricCard.classList.remove('updating'), 800);
+            }
+            
+            if (disposableElement) {
+                disposableElement.textContent = `$${disposable.toLocaleString()}`;
+                
+                if (disposable < 0) {
+                    disposableElement.className = 'metric-value negative';
+                } else if (disposable < 200) {
+                    disposableElement.className = 'metric-value neutral';
+                } else {
+                    disposableElement.className = 'metric-value positive';
+                }
+            }
+        }
+        
+        function updateDebtRatioMetric(ratio) {
+            const debtElement = document.getElementById('debtRatio');
+            const contextElement = document.getElementById('debtContext');
+            const metricCard = document.getElementById('debtMetric');
+            
+            // Add animation
+            if (metricCard) {
+                metricCard.classList.add('updating');
+                setTimeout(() => metricCard.classList.remove('updating'), 800);
+            }
+            
+            if (debtElement) {
+                debtElement.textContent = `${Math.round(ratio)}%`;
+                
+                if (ratio > 40) {
+                    debtElement.className = 'metric-value negative';
+                } else if (ratio > 25) {
+                    debtElement.className = 'metric-value neutral';
+                } else {
+                    debtElement.className = 'metric-value positive';
+                }
+            }
+            
+            if (contextElement) {
+                if (ratio > 40) {
+                    contextElement.textContent = 'High debt burden';
+                } else if (ratio > 25) {
+                    contextElement.textContent = 'Moderate debt burden';
+                } else {
+                    contextElement.textContent = 'Manageable debt load';
+                }
+            }
+        }
+        
+        function updateChapterRecommendation(incomeRatio, disposableIncome, debtRatio) {
+            const chapter7Card = document.getElementById('chapter7Card');
+            const chapter13Card = document.getElementById('chapter13Card');
+            const chapter7Number = document.getElementById('chapter7Number');
+            const chapter13Number = document.getElementById('chapter13Number');
+            const chapter7Reason = document.getElementById('chapter7Reason');
+            const chapter13Reason = document.getElementById('chapter13Reason');
+            
+            // Logic for recommendation
+            let recommendChapter7 = false;
+            let chapter7ReasonText = '';
+            let chapter13ReasonText = '';
+            
+            if (incomeRatio <= 100) {
+                recommendChapter7 = true;
+                chapter7ReasonText = `Income ${Math.round(incomeRatio)}% of state median → likely qualifies for Chapter 7 liquidation`;
+                chapter13ReasonText = 'Income below median makes Chapter 7 preferred, but Chapter 13 remains an option';
+            } else if (incomeRatio <= 120 && disposableIncome < 200) {
+                recommendChapter7 = true;
+                chapter7ReasonText = `Income ${Math.round(incomeRatio)}% of median, but low disposable income → may still qualify for Chapter 7`;
+                chapter13ReasonText = 'Limited disposable income, Chapter 13 payments would be minimal';
+            } else {
+                recommendChapter7 = false;
+                chapter7ReasonText = `Income ${Math.round(incomeRatio)}% of median → unlikely to pass Chapter 7 means test`;
+                chapter13ReasonText = `Income ${Math.round(incomeRatio)}% of median → Chapter 13 repayment plan likely required`;
+            }
+            
+            // Update cards with animations
+            if (chapter7Card && chapter13Card) {
+                // Add transition delay for dramatic effect
+                setTimeout(() => {
+                    if (recommendChapter7) {
+                        chapter7Card.className = 'chapter-card recommended';
+                        chapter13Card.className = 'chapter-card not-recommended';
+                        
+                        // Show/hide recommended badges
+                        const ch7Badge = chapter7Card.querySelector('.recommended-badge');
+                        const ch13Badge = chapter13Card.querySelector('.recommended-badge');
+                        if (ch7Badge) ch7Badge.style.display = 'block';
+                        if (ch13Badge) ch13Badge.style.display = 'none';
+                    } else {
+                        chapter7Card.className = 'chapter-card not-recommended';
+                        chapter13Card.className = 'chapter-card recommended';
+                        
+                        // Show/hide recommended badges
+                        const ch7Badge = chapter7Card.querySelector('.recommended-badge');
+                        const ch13Badge = chapter13Card.querySelector('.recommended-badge');
+                        if (ch7Badge) ch7Badge.style.display = 'none';
+                        if (ch13Badge) ch13Badge.style.display = 'block';
+                    }
+                }, 400);
+            }
+            
+            if (chapter7Number && chapter13Number) {
+                if (recommendChapter7) {
+                    chapter7Number.className = 'chapter-number recommended';
+                    chapter13Number.className = 'chapter-number not-recommended';
+                } else {
+                    chapter7Number.className = 'chapter-number not-recommended';
+                    chapter13Number.className = 'chapter-number recommended';
+                }
+            }
+            
+            if (chapter7Reason) {
+                chapter7Reason.textContent = chapter7ReasonText;
+            }
+            if (chapter13Reason) {
+                chapter13Reason.textContent = chapter13ReasonText;
+            }
+        }
+        
+        function refreshEligibility() {
+            updateEligibilityMeter();
+            logMessage('Eligibility meter updated based on current financial data');
+        }
+        
+        // 2. Inline Red Flags & Prompts
+        function checkForRedFlags() {
+            redFlags = [];
+            
+            // Check for concerning financial patterns
+            if (currentFinancialData.monthlyExpenses > currentFinancialData.monthlyIncome) {
+                redFlags.push({
+                    type: 'expense_excess',
+                    message: 'Your monthly expenses exceed your income, indicating negative cash flow.',
+                    prompt: 'I want to make sure I understand your situation correctly. Are there any expenses we might have missed or income sources we haven\'t discussed yet?'
+                });
+            }
+            
+            const housingRatio = (currentFinancialData.housingExpense / currentFinancialData.monthlyIncome) * 100;
+            if (housingRatio > 50) {
+                redFlags.push({
+                    type: 'housing_burden',
+                    message: `Your housing costs are ${Math.round(housingRatio)}% of your income, which is quite high.`,
+                    prompt: 'This is a significant portion of your income. Are you current on your housing payments, and are you hoping to keep this property through the bankruptcy process?'
+                });
+            }
+            
+            if (currentFinancialData.monthlyIncome > 0 && currentFinancialData.totalDebts / (currentFinancialData.monthlyIncome * 12) > 2) {
+                redFlags.push({
+                    type: 'high_debt',
+                    message: 'Your total debt is more than twice your annual income.',
+                    prompt: 'This level of debt can be overwhelming. Can you tell me about the main sources of this debt - was it from a specific event or accumulated over time?'
+                });
+            }
+            
+            displayRedFlags();
+        }
+        
+        function displayRedFlags() {
+            const container = document.getElementById('redFlagContainer');
+            container.innerHTML = '';
+            
+            redFlags.forEach((flag, index) => {
+                const flagDiv = document.createElement('div');
+                flagDiv.className = 'red-flag-alert';
+                flagDiv.innerHTML = `
+                    <div class="red-flag-header">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.856-.833-2.64 0L3.174 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                        Review Needed
+                    </div>
+                    <div class="red-flag-message">${flag.message}</div>
+                    <div class="follow-up-prompt">${flag.prompt}</div>
+                `;
+                container.appendChild(flagDiv);
+            });
+        }
+        
+        // 3. Undo/Correct Last Answer
+        function showUndoOptions() {
+            if (conversationHistory.length === 0) {
+                alert('No conversation history available to modify.');
+                return;
+            }
+            
+            // Create modal or dropdown with recent questions
+            const recentQuestions = conversationHistory.slice(-5).reverse();
+            let options = 'Choose which answer to change:\n\n';
+            recentQuestions.forEach((item, index) => {
+                options += `${index + 1}. ${item.question.substring(0, 60)}...\n`;
+            });
+            
+            const choice = prompt(options + '\nEnter the number of the question you want to change:');
+            const choiceIndex = parseInt(choice) - 1;
+            
+            if (choiceIndex >= 0 && choiceIndex < recentQuestions.length) {
+                const selectedItem = recentQuestions[choiceIndex];
+                redoQuestion(selectedItem);
+            }
+        }
+        
+        function redoQuestion(conversationItem) {
+            // Re-ask the question
+            const newAnswer = prompt(`Let's correct this answer.\n\nQuestion: ${conversationItem.question}\n\nYour previous answer: "${conversationItem.answer}"\n\nPlease provide your new answer:`);
+            
+            if (newAnswer && newAnswer.trim() !== '') {
+                // Update conversation history
+                const historyIndex = conversationHistory.findIndex(item => 
+                    item.question === conversationItem.question && 
+                    item.timestamp === conversationItem.timestamp
+                );
+                
+                if (historyIndex !== -1) {
+                    conversationHistory[historyIndex].answer = newAnswer;
+                    conversationHistory[historyIndex].corrected = true;
+                    conversationHistory[historyIndex].correctedAt = new Date().toISOString();
+                }
+                
+                // Process the new answer
+                processAnswerUpdate(conversationItem.fieldKey, newAnswer);
+                
+                // Update displays
+                updateConversationDisplay();
+                updateEligibilityMeter();
+                
+                logMessage(`Updated answer for: ${conversationItem.question}`);
+            }
+        }
+        
+        function processAnswerUpdate(fieldKey, newAnswer) {
+            // Process the new answer and update financial data
+            if (fieldKey && fieldKey.includes('income')) {
+                const income = parseFloat(newAnswer.replace(/[^0-9.]/g, ''));
+                if (!isNaN(income)) {
+                    currentFinancialData.monthlyIncome = income;
+                }
+            } else if (fieldKey && fieldKey.includes('expense')) {
+                const expense = parseFloat(newAnswer.replace(/[^0-9.]/g, ''));
+                if (!isNaN(expense)) {
+                    currentFinancialData.monthlyExpenses = expense;
+                }
+            }
+            // Add more field processing as needed
+        }
+        
+        // 4. Attorney Handoff Packet
+        function generateHandoffPacket() {
+            logMessage('Generating attorney handoff packet...');
+            
+            // Show handoff panel
+            const handoffPanel = document.getElementById('handoffPanel');
+            if (handoffPanel) {
+                handoffPanel.style.display = 'block';
+            }
+            
+            // Calculate summary statistics
+            updateHandoffSummary();
+            
+            // Generate PDF packet
+            fetch('/api/generate-handoff-packet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    caseData: currentFinancialData,
+                    conversationHistory: conversationHistory,
+                    redFlags: redFlags,
+                    completionStatus: getCompletionStatus()
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    logMessage('Handoff packet generated successfully');
+                    alert(`Attorney handoff packet generated: ${result.filename}`);
+                } else {
+                    logMessage(`Error generating handoff packet: ${result.error}`);
+                }
+            })
+            .catch(error => {
+                logMessage(`Error: ${error.message}`);
+            });
+        }
+        
+        function updateHandoffSummary() {
+            const completion = calculateOverallCompletion();
+            const sessionTime = calculateSessionTime();
+            const formsReady = calculateFormsReady();
+            const issuesCount = redFlags.length + getUnresolvedItems().length;
+            
+            document.getElementById('handoffCompletion').textContent = `${completion}%`;
+            document.getElementById('handoffForms').textContent = `${formsReady.ready}/${formsReady.total}`;
+            document.getElementById('handoffIssues').textContent = issuesCount;
+            document.getElementById('handoffTime').textContent = sessionTime;
+            
+            updateUnresolvedItems();
+        }
+        
+        function calculateOverallCompletion() {
+            // Calculate based on required fields filled
+            let requiredFields = 20; // Example total
+            let completedFields = 0;
+            
+            if (currentFinancialData.monthlyIncome > 0) completedFields++;
+            if (currentFinancialData.monthlyExpenses > 0) completedFields++;
+            if (currentFinancialData.householdSize > 0) completedFields++;
+            if (currentFinancialData.state) completedFields++;
+            // Add more field checks...
+            
+            return Math.round((completedFields / requiredFields) * 100);
+        }
+        
+        function calculateSessionTime() {
+            // Calculate session duration
+            const sessionStart = new Date(); // Would track actual start time
+            const now = new Date();
+            const diffMinutes = Math.round((now - sessionStart) / (1000 * 60));
+            return `${diffMinutes} min`;
+        }
+        
+        function calculateFormsReady() {
+            // Check which forms are substantially complete
+            return { ready: 6, total: 8 }; // Example
+        }
+        
+        function getUnresolvedItems() {
+            const items = [];
+            
+            if (!currentFinancialData.assetValuation) {
+                items.push('Verify asset valuation for home equity');
+            }
+            if (!currentFinancialData.exemptionsConfirmed) {
+                items.push('Confirm state-specific exemptions');
+            }
+            if (currentFinancialData.recentTransfers) {
+                items.push('Review recent transfer to family member');
+            }
+            
+            return items;
+        }
+        
+        function updateUnresolvedItems() {
+            const unresolvedList = document.getElementById('unresolvedItems');
+            const items = getUnresolvedItems();
+            
+            unresolvedList.innerHTML = '';
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'unresolved-item';
+                li.innerHTML = `
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    ${item}
+                `;
+                unresolvedList.appendChild(li);
+            });
+        }
+        
+        // Enhanced conversation tracking
+        function addToConversationHistory(question, answer, fieldKey = null) {
+            const item = {
+                question: question,
+                answer: answer,
+                fieldKey: fieldKey,
+                timestamp: new Date().toISOString(),
+                corrected: false
+            };
+            
+            conversationHistory.push(item);
+            updateConversationDisplay();
+            
+            // Show undo controls after first few exchanges
+            if (conversationHistory.length >= 3) {
+                const undoControls = document.getElementById('undoControls');
+                if (undoControls) {
+                    undoControls.style.display = 'flex';
+                }
+            }
+        }
+        
+        function updateConversationDisplay() {
+            const tracker = document.getElementById('conversationTracker');
+            const list = document.getElementById('conversationList');
+            
+            if (conversationHistory.length > 0) {
+                tracker.style.display = 'block';
+            }
+            
+            list.innerHTML = '';
+            conversationHistory.slice(-10).forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'conversation-item';
+                div.innerHTML = `
+                    <div class="conversation-question">${item.question}</div>
+                    <div class="conversation-answer">${item.answer}</div>
+                    <div class="conversation-meta">
+                        <span class="field-tag">${item.fieldKey || 'general'}</span>
+                        <span>${new Date(item.timestamp).toLocaleTimeString()}</span>
+                        ${item.corrected ? '<span style="color: var(--warning);">✎ Corrected</span>' : ''}
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
         
         // Tab switching
         function switchTab(index) {
@@ -1139,11 +3697,19 @@ Begin by introducing yourself and explaining the consultation process.`,
             const listDiv = document.getElementById('documentList');
             
             const resultItem = document.createElement('div');
-            resultItem.style.cssText = 'margin: 10px 0; padding: 10px; background: #f0f8ff; border-radius: 5px;';
+            resultItem.className = 'component-card';
+            resultItem.style.marginBottom = 'var(--spacing-md)';
             resultItem.innerHTML = `
-                <strong>${filename}</strong><br>
-                Type: ${result.document_type || 'Unknown'}<br>
-                Status: Processed successfully
+                <h5>${filename}</h5>
+                <div style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+                    <div style="color: var(--primary-600);"><strong>Type:</strong> ${result.document_type || 'Unknown'}</div>
+                    <div class="component-status status-online">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Processed successfully
+                    </div>
+                </div>
             `;
             
             listDiv.appendChild(resultItem);
@@ -1171,22 +3737,28 @@ Begin by introducing yourself and explaining the consultation process.`,
             const statusDiv = document.getElementById('componentStatus');
             const components = health.components;
             
-            let html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">';
+            let html = '<div class="component-status-grid">';
             
             Object.entries(components).forEach(([name, status]) => {
-                const statusColor = status ? '#27ae60' : '#e74c3c';
+                const statusClass = status ? 'status-online' : 'status-offline';
                 const statusText = status ? 'Online' : 'Offline';
+                const statusIcon = status ? 
+                    '<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' :
+                    '<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
                 
                 html += `
-                    <div style="padding: 10px; background: white; border-radius: 5px; border-left: 4px solid ${statusColor};">
-                        <strong>${name.replace(/_/g, ' ').toUpperCase()}</strong><br>
-                        <span style="color: ${statusColor};">${statusText}</span>
+                    <div class="component-card">
+                        <h5>${name.replace(/_/g, ' ')}</h5>
+                        <div class="component-status ${statusClass}">
+                            ${statusIcon}
+                            ${statusText}
+                        </div>
                     </div>
                 `;
             });
             
             html += '</div>';
-            html += `<p style="margin-top: 15px;"><strong>Version:</strong> ${health.version}</p>`;
+            html += `<p style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid var(--primary-200); color: var(--primary-600);"><strong>Version:</strong> ${health.version}</p>`;
             
             statusDiv.innerHTML = html;
         }
@@ -1204,6 +3776,11 @@ Begin by introducing yourself and explaining the consultation process.`,
         
         // Initialize drag and drop
         document.addEventListener('DOMContentLoaded', function() {
+            // Show demo mode banner on load
+            setTimeout(() => {
+                showDemoMode();
+            }, 1500);
+            
             const uploadArea = document.querySelector('.upload-area');
             
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
